@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from scistudio.blocks.base.package_info import PackageInfo
+from scistudio.blocks.base.package_info import PackageInfo, PackageOtaSource
 
 from scistudio_blocks_imaging.interactive.fiji_block import FijiBlock
 from scistudio_blocks_imaging.interactive.napari_block import NapariBlock
@@ -52,6 +52,11 @@ from scistudio_blocks_imaging.visualization.render import (
 )
 
 __version__ = "0.1.0"
+
+# OTA hot-update source (#1784). Keep in sync with [tool.scistudio.ota]
+# in pyproject.toml; validate_contract.py enforces they match.
+OTA_MANIFEST_URL = "https://github.com/jiazhenz026/scistudio-blocks-imaging/releases/download/ota-alpha/manifest.json"
+OTA_CHANNEL = "alpha"
 
 _IMAGING_TYPES: tuple[type, ...] = (Image, Mask, Label, Transform)
 _IMAGING_BLOCKS: tuple[type, ...] = (
@@ -114,6 +119,7 @@ def get_package_info() -> PackageInfo:
         description="Microscopy imaging blocks for SciStudio Phase 11 workflows.",
         author="SciStudio Contributors",
         version=__version__,
+        ota=PackageOtaSource(manifest_url=OTA_MANIFEST_URL, channel=OTA_CHANNEL),
     )
 
 

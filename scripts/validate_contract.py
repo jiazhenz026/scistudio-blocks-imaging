@@ -66,6 +66,17 @@ def main() -> int:
         if not entry_points.get(group):
             _fail(f"missing entry-point group [{group}] in pyproject.toml")
 
+    # OTA self-declaration (#1784): the publish-time source of truth lives in
+    # [tool.scistudio.ota]; the package's PackageInfo.ota must mirror it so the
+    # in-app Package Manager checks the same URL ota_publish.py uploads to.
+    ota_config = (pyproject.get("tool", {}) or {}).get("scistudio", {}).get("ota")
+    if not isinstance(ota_config, dict) or not ota_config.get("manifest_url"):
+        _fail("missing [tool.scistudio.ota].manifest_url in pyproject.toml")
+    ota_url = str(ota_config["manifest_url"])
+    ota_channel = str(ota_config.get("channel") or "stable")
+    if not ota_url.startswith("https://"):
+        _fail(f"[tool.scistudio.ota].manifest_url must be HTTPS: {ota_url!r}")
+
     # Core base classes (require core installed).
     try:
         from scistudio.blocks.base.block import Block
@@ -86,7 +97,15 @@ def main() -> int:
         for block in blocks:
             if not (isinstance(block, type) and issubclass(block, Block)):
                 _fail(f"{block!r} from {ref} is not a Block subclass")
-        print(f"  ✓ blocks: {len(blocks)} block(s) via {ref}")
+        # PackageInfo.ota must be declared and agree with pyproject (#1784).
+        ota = getattr(info, "ota", None)
+        if ota is None:
+            _fail(f"{ref}() PackageInfo.ota is not declared (see [tool.scistudio.ota])")
+        if getattr(ota, "manifest_url", None) != ota_url:
+            _fail(f"{ref}() PackageInfo.ota.manifest_url does not match [tool.scistudio.ota].manifest_url")
+        if getattr(ota, "channel", None) != ota_channel:
+            _fail(f"{ref}() PackageInfo.ota.channel does not match [tool.scistudio.ota].channel")
+        print(f"  ✓ blocks: {len(blocks)} block(s) via {ref}; OTA → {ota_channel}")
 
     # 2. scistudio.types -> [type, ...]
     for ref in entry_points[TYPES_GROUP].values():
