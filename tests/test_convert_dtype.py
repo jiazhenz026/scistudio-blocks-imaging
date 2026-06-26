@@ -6,10 +6,10 @@ import importlib
 
 import numpy as np
 import pytest
+from scistudio.blocks.base.config import BlockConfig
+
 from scistudio_blocks_imaging.preprocess.convert_dtype import ConvertDType
 from scistudio_blocks_imaging.types import Image
-
-from scistudio.blocks.base.config import BlockConfig
 
 
 def _make_image(arr: np.ndarray, axes: list[str]) -> Image:

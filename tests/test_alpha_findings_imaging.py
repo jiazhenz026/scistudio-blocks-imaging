@@ -17,13 +17,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging.types import Image
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.registry import BlockRegistry
 from scistudio.core.types.array import Array
 from scistudio.core.types.collection import Collection
 from scistudio.engine.materialisation import materialise_to_file, reconstruct_from_file
+
+from scistudio_blocks_imaging.types import Image
 
 
 def _full_registry() -> BlockRegistry:

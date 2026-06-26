@@ -30,9 +30,9 @@ import numpy as np
 import pytest
 from ome_types.model import OME, Pixels, PixelType
 from ome_types.model import Image as OMEImage
-from scistudio_blocks_imaging.types import Image, Label, Mask
-
 from scistudio.blocks.base.config import BlockConfig
+
+from scistudio_blocks_imaging.types import Image, Label, Mask
 
 pytest.importorskip("skimage")
 
@@ -367,9 +367,9 @@ def test_mode_c_cleanup_remove_small_objects_propagates_ome_via_model_dump() -> 
     """RemoveSmallObjects rebuilds Label.Meta via ``model_dump+override``,
     which preserves ``ome`` because the dumped dict round-trips through
     Pydantic validation back to an OME object."""
-    from scistudio_blocks_imaging.segmentation.cleanup import RemoveSmallObjects
-
     from scistudio.core.types.array import Array
+
+    from scistudio_blocks_imaging.segmentation.cleanup import RemoveSmallObjects
 
     ome = _make_ome(physical_size_x=0.5)
     raster = np.zeros((16, 16), dtype=np.int32)
@@ -393,10 +393,10 @@ def test_mode_c_legitimate_drop_region_props_returns_dataframe() -> None:
     This test pins the legitimate-drop decision so future refactors don't
     silently add an ome carrier to DataFrame outputs.
     """
-    from scistudio_blocks_imaging.measurement.region_props import RegionProps
-
     from scistudio.core.types.array import Array
     from scistudio.core.types.dataframe import DataFrame
+
+    from scistudio_blocks_imaging.measurement.region_props import RegionProps
 
     ome = _make_ome(physical_size_x=0.5)
     raster = np.zeros((8, 8), dtype=np.int32)

@@ -13,11 +13,11 @@ from collections.abc import Callable
 from typing import Any, ClassVar, cast
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
 from scistudio.utils.axis_iter import iterate_over_axes
+
 from scistudio_blocks_imaging.types import Image
 
 _ALLOWED_METHODS = frozenset({"rollingball", "tophat", "polynomial", "constant"})

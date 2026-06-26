@@ -16,13 +16,13 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort
 from scistudio.blocks.io.capabilities import FormatCapability, MetadataFidelity
 from scistudio.blocks.io.io_block import IOBlock
 from scistudio.core.types.base import DataObject
 from scistudio.core.types.collection import Collection
+
 from scistudio_blocks_imaging.io.pillow_handler import _save_jpeg, _save_png
 from scistudio_blocks_imaging.types import Image
 
@@ -237,7 +237,7 @@ def _write_tiff(image: Image, path: Path) -> None:
 
     # Fallback: full materialisation for non-zarr or 2D images.
     data = _materialise(image)
-    write_kwargs: dict[str, Any] = {"metadata": {"axes": axes_str}}
+    write_kwargs = {"metadata": {"axes": axes_str}}
     if ome_xml is not None:
         write_kwargs["description"] = ome_xml
     tifffile.imwrite(str(path), data, **write_kwargs)

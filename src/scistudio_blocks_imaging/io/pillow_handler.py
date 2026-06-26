@@ -26,8 +26,8 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from ome_types.model import OME, Pixels, PixelType
 from ome_types.model import Image as OMEImage
-
 from scistudio.core.meta.framework import FrameworkMeta
+
 from scistudio_blocks_imaging.types import Image
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -74,7 +74,7 @@ def _exif_dpi_to_micrometers(dpi_value: float | int | tuple[Any, Any]) -> float 
             return None
         dpi_value = dpi_value[0]
     try:
-        dpi = float(dpi_value)
+        dpi = float(dpi_value)  # type: ignore[arg-type]  # narrowed to a scalar above
     except (TypeError, ValueError):
         return None
     if dpi <= 0:
@@ -116,7 +116,7 @@ def _ome_from_pil(pil_image: PILImage, array: np.ndarray, axes: list[str]) -> OM
         size_c=size_c,
         size_z=size_z,
         size_t=size_t,
-        dimension_order="XYCZT",
+        dimension_order="XYCZT",  # type: ignore[arg-type]  # ome-types coerces the str literal
         type=_dtype_to_pixel_type(array.dtype),
         physical_size_x=physical_size_x,
         physical_size_y=physical_size_y,

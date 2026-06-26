@@ -118,9 +118,9 @@ def test_load_image_dispatch_to_missing_bioformats_yields_clear_error(
     fake = tmp_path / "sample.czi"
     fake.write_bytes(b"\x00" * 16)  # content irrelevant; handler stops at import
 
-    from scistudio_blocks_imaging.io.load_image import LoadImage
-
     from scistudio.blocks.base.config import BlockConfig
+
+    from scistudio_blocks_imaging.io.load_image import LoadImage
 
     real_import = builtins.__import__
 
@@ -182,9 +182,9 @@ def test_bioformats_load_populates_ome_physical_size_x(fmt: str, suffix: str) ->
             "SC-002 acceptance is exercised only when a fixture is available."
         )
 
-    from scistudio_blocks_imaging.io.load_image import LoadImage
-
     from scistudio.blocks.base.config import BlockConfig
+
+    from scistudio_blocks_imaging.io.load_image import LoadImage
 
     fixture = candidates[0]
     loaded = LoadImage().load(BlockConfig(params={"path": str(fixture)}))
@@ -208,6 +208,7 @@ def test_axes_from_ome_extracts_x_y_for_minimal_input() -> None:
     order from a minimal OME with x/y only."""
     from ome_types.model import OME, Pixels, PixelType
     from ome_types.model import Image as OMEImage
+
     from scistudio_blocks_imaging.io.bioformats_handler import _axes_from_ome
 
     ome = OME(
@@ -235,6 +236,7 @@ def test_axes_from_ome_keeps_c_z_t_when_size_gt_one() -> None:
     """``_axes_from_ome`` keeps C/Z/T axes when their size is greater than 1."""
     from ome_types.model import OME, Pixels, PixelType
     from ome_types.model import Image as OMEImage
+
     from scistudio_blocks_imaging.io.bioformats_handler import _axes_from_ome
 
     ome = OME(

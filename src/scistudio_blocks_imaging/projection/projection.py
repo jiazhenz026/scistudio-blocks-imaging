@@ -15,10 +15,10 @@ from __future__ import annotations
 from typing import Any, ClassVar, cast
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
+
 from scistudio_blocks_imaging.types import Image
 
 _METHODS = frozenset({"max", "mean", "sum", "min", "std"})

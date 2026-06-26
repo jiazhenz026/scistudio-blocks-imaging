@@ -6,12 +6,12 @@ from typing import Any, ClassVar
 
 import numpy as np
 import pyarrow as pa
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
 from scistudio.core.types.array import Array
 from scistudio.core.types.dataframe import DataFrame
+
 from scistudio_blocks_imaging.types import Label
 
 

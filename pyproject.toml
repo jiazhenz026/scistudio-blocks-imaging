@@ -7,6 +7,7 @@ name = "scistudio-blocks-imaging"
 version = "0.1.0"
 description = "Phase 11 microscopy imaging blocks for SciStudio."
 readme = "README.md"
+license = { text = "MIT" }
 authors = [
     {name = "SciStudio Contributors"},
 ]
@@ -30,6 +31,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.11",
+    "mypy>=1.10",
+    "build>=1.2",
+]
 cellpose = [
     "cellpose>=3.0",
 ]
@@ -71,7 +79,28 @@ artifacts = [
 ]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 markers = [
     "requires_cellpose: needs the [cellpose] extra",
     "requires_bioformats: needs the [bioformats] extra (python-bioformats + JVM)",
 ]
+
+# Lint/format/type config mirrors SciStudio core so authors get the same
+# feedback locally as in the monorepo.
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["scistudio_blocks_imaging"]
+
+[tool.mypy]
+python_version = "3.11"
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "src"
+ignore_missing_imports = true

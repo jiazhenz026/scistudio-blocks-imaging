@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import OutputPort
 from scistudio.blocks.io.capabilities import FormatCapability, MetadataFidelity
@@ -23,6 +22,7 @@ from scistudio.blocks.io.io_block import IOBlock
 from scistudio.core.meta.framework import FrameworkMeta
 from scistudio.core.types.base import DataObject
 from scistudio.core.types.collection import Collection
+
 from scistudio_blocks_imaging.io.pillow_handler import _load_jpeg, _load_png
 from scistudio_blocks_imaging.types import Image
 
@@ -201,7 +201,6 @@ def _load_zarr(path: Path, axes_override: list[str] | None) -> Image:
     first-class support is deferred.
     """
     import zarr
-
     from scistudio.core.storage.ref import StorageReference
 
     node = zarr.open(str(path), mode="r")

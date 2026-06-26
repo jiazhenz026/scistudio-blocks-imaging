@@ -20,6 +20,7 @@ from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, ports_from_config_dicts
 from scistudio.core.types.artifact import Artifact
 from scistudio.core.types.collection import Collection
+
 from scistudio_blocks_imaging.types import Image
 
 logger = logging.getLogger(__name__)

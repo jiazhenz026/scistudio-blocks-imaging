@@ -31,8 +31,8 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-
 from scistudio.core.meta.framework import FrameworkMeta
+
 from scistudio_blocks_imaging.types import Image
 
 _MISSING_EXTRAS_HINT: str = (

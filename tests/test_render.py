@@ -7,6 +7,9 @@ from typing import cast
 
 import numpy as np
 import pytest
+from scistudio.blocks.base.config import BlockConfig
+from scistudio.core.types.array import Array
+
 from scistudio_blocks_imaging.types import Image, Label, Mask
 from scistudio_blocks_imaging.visualization.render import (
     RenderHistogram,
@@ -15,9 +18,6 @@ from scistudio_blocks_imaging.visualization.render import (
     RenderOverlay,
     RenderPseudoColor,
 )
-
-from scistudio.blocks.base.config import BlockConfig
-from scistudio.core.types.array import Array
 
 
 def _make_image(arr: np.ndarray, axes: list[str] | None = None) -> Image:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from scistudio.blocks.base.package_info import PackageInfo
+
 from scistudio_blocks_imaging.interactive.fiji_block import FijiBlock
 from scistudio_blocks_imaging.interactive.napari_block import NapariBlock
 from scistudio_blocks_imaging.io.load_image import LoadImage

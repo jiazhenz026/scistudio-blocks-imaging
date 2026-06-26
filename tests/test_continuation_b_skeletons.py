@@ -12,7 +12,6 @@ import sys
 import numpy as np
 import pyarrow as pa
 import pytest
-
 from scistudio.blocks.app.app_block import AppBlock
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.process.process_block import ProcessBlock
@@ -536,10 +535,10 @@ def test_t_img_033_pseudo_color_lut() -> None:
 
 def test_t_img_033_overlay_alpha() -> None:
     pytest.importorskip("matplotlib")
+    from scistudio.core.types.array import Array
+
     from scistudio_blocks_imaging.types import Image, Label
     from scistudio_blocks_imaging.visualization.render import RenderOverlay
-
-    from scistudio.core.types.array import Array
 
     image = Image(axes=["y", "x"], shape=(4, 4), dtype=np.float32)
     image._data = np.arange(16, dtype=np.float32).reshape(4, 4)  # type: ignore[attr-defined]

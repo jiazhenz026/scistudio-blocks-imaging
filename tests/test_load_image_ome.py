@@ -24,11 +24,11 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging.io.load_image import LoadImage
-from scistudio_blocks_imaging.types import Image
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.core.types.collection import Collection
+
+from scistudio_blocks_imaging.io.load_image import LoadImage
+from scistudio_blocks_imaging.types import Image
 
 
 def _ome_xml_round_trip_available() -> bool:

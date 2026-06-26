@@ -17,14 +17,14 @@ from types import MethodType
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging.interactive.fiji_block import FijiBlock
-from scistudio_blocks_imaging.interactive.napari_block import NapariBlock
-from scistudio_blocks_imaging.types import Image
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.state import BlockState
 from scistudio.core.types.artifact import Artifact
 from scistudio.core.types.collection import Collection
+
+from scistudio_blocks_imaging.interactive.fiji_block import FijiBlock
+from scistudio_blocks_imaging.interactive.napari_block import NapariBlock
+from scistudio_blocks_imaging.types import Image
 
 
 def _make_image(arr: np.ndarray, axes: list[str] | None = None) -> Image:

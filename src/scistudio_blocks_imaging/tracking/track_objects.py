@@ -13,6 +13,7 @@ from typing import Any, ClassVar
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
+
 from scistudio_blocks_imaging.types import Label
 
 
@@ -47,7 +48,8 @@ class TrackObjects(ProcessBlock):
     }
 
     def process_item(self, item: Label, config: BlockConfig, state: Any = None) -> Label:
-        # TODO: T-IMG-023 — implement object tracking across time (nearest-neighbour, trackpy, btrack backends) for Phase 12.
+        # TODO: T-IMG-023 — implement object tracking across time
+        #   (nearest-neighbour, trackpy, btrack backends) for Phase 12.
         raise NotImplementedError(
             "T-IMG-023: TrackObjects is planned for Phase 12 (skeleton continuation B). "
             "See docs/specs/phase11-imaging-block-spec.md §9 T-IMG-023."

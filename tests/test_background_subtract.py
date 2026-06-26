@@ -9,12 +9,12 @@ import pytest
 
 pytest.importorskip("skimage")
 
+from scistudio.blocks.base.config import BlockConfig
+
 from scistudio_blocks_imaging.preprocess.background_subtract import (
     BackgroundSubtract,
 )
 from scistudio_blocks_imaging.types import Image
-
-from scistudio.blocks.base.config import BlockConfig
 
 
 def _make_image(arr: np.ndarray, axes: list[str]) -> Image:

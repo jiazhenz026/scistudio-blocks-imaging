@@ -5,15 +5,15 @@ from __future__ import annotations
 import numpy as np
 import pytest
 from pydantic import ValidationError
-from scistudio_blocks_imaging import get_types
-from scistudio_blocks_imaging.types import Image, Label, Mask, Transform
-
 from scistudio.core.meta import ChannelInfo
 from scistudio.core.types.array import Array
 from scistudio.core.types.dataframe import DataFrame
 from scistudio.core.types.registry import TypeRegistry
 from scistudio.core.types.serialization import _reconstruct_one, _serialise_one
 from scistudio.core.units import PhysicalQuantity
+
+from scistudio_blocks_imaging import get_types
+from scistudio_blocks_imaging.types import Image, Label, Mask, Transform
 
 
 def _image_meta() -> Image.Meta:

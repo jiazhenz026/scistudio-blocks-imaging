@@ -14,11 +14,11 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from scistudio.blocks.base.config import BlockConfig
+
 from scistudio_blocks_imaging.io.load_image import LoadImage
 from scistudio_blocks_imaging.io.save_image import SaveImage
 from scistudio_blocks_imaging.types import Image
-
-from scistudio.blocks.base.config import BlockConfig
 
 # Lossless + lossy in-scope formats. Build a 2-D uint8 image so every
 # format (incl. PNG/JPEG which require uint8) accepts it.

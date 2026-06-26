@@ -9,14 +9,14 @@ from typing import Any
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging import get_blocks
-from scistudio_blocks_imaging.segmentation.cellpose_segment import CellposeSegment
-from scistudio_blocks_imaging.types import Image, Label
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.core.types.collection import Collection
 from scistudio.core.types.registry import TypeRegistry
 from scistudio.core.types.serialization import _reconstruct_one, _serialise_one
+
+from scistudio_blocks_imaging import get_blocks
+from scistudio_blocks_imaging.segmentation.cellpose_segment import CellposeSegment
+from scistudio_blocks_imaging.types import Image, Label
 
 _INT32_DTYPE = np.dtype(np.int32)
 

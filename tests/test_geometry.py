@@ -9,12 +9,12 @@ import pytest
 
 pytest.importorskip("skimage")
 
-from scistudio_blocks_imaging.preprocess.geometry import Crop, Flip, Pad, Resize, Rotate
-from scistudio_blocks_imaging.types import Image
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.core.types.collection import Collection
 from scistudio.core.units import PhysicalQuantity
+
+from scistudio_blocks_imaging.preprocess.geometry import Crop, Flip, Pad, Resize, Rotate
+from scistudio_blocks_imaging.types import Image
 
 
 def _make_image(arr: np.ndarray, axes: list[str], *, meta: Image.Meta | None = None) -> Image:
