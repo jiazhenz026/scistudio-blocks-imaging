@@ -31,7 +31,7 @@ def test_normalize_minmax_2d_to_0_1() -> None:
     arr = np.array([[0.0, 5.0], [10.0, 20.0]], dtype=np.float64)
     img = _make_image(arr, ["y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "minmax"}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert float(out_arr.min()) == 0.0
     assert float(out_arr.max()) == 1.0
 
@@ -41,7 +41,7 @@ def test_normalize_zscore_mean_zero_std_one() -> None:
     arr = rng.normal(loc=10.0, scale=3.0, size=(16, 16)).astype(np.float64)
     img = _make_image(arr, ["y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "zscore"}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert abs(float(out_arr.mean())) < 1e-9
     assert abs(float(out_arr.std()) - 1.0) < 1e-9
 
@@ -52,7 +52,7 @@ def test_normalize_percentile_clips_and_rescales() -> None:
     arr = np.broadcast_to(arr, (101, 4)).copy()
     img = _make_image(arr, ["y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "percentile", "low_pct": 10, "high_pct": 90}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert float(out_arr.min()) == 0.0
     assert float(out_arr.max()) == 1.0
 
@@ -61,7 +61,7 @@ def test_normalize_zero_variance_safe_zscore() -> None:
     arr = np.full((4, 4), 7.0, dtype=np.float64)
     img = _make_image(arr, ["y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "zscore"}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert not np.isnan(out_arr).any()
     assert np.allclose(out_arr, 0.0)
 
@@ -70,7 +70,7 @@ def test_normalize_zero_variance_safe_minmax() -> None:
     arr = np.full((4, 4), 7.0, dtype=np.float64)
     img = _make_image(arr, ["y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "minmax"}))
-    assert np.allclose(np.asarray(out._data), 0.0)
+    assert np.allclose(np.asarray(out.to_memory()), 0.0)
 
 
 def test_normalize_invalid_method_raises() -> None:
@@ -102,7 +102,7 @@ def test_normalize_5d_per_slice_each_slice_to_0_1() -> None:
     arr[1, 1] = np.arange(48, 64).reshape(4, 4)
     img = _make_image(arr, ["t", "c", "y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "minmax", "per_slice": True}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     # Each (y, x) slice is rescaled independently.
     for t in range(2):
         for c in range(2):
@@ -115,7 +115,7 @@ def test_normalize_5d_per_image_when_per_slice_false() -> None:
     arr = np.arange(64, dtype=np.float64).reshape(2, 2, 4, 4)
     img = _make_image(arr, ["t", "c", "y", "x"])
     out = Normalize().process_item(img, BlockConfig(params={"method": "minmax", "per_slice": False}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert float(out_arr.min()) == 0.0
     assert float(out_arr.max()) == 1.0
     # With whole-image minmax, the global min cell is 0 and max cell is 1;

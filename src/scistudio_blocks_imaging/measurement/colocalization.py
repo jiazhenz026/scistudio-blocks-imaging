@@ -213,13 +213,13 @@ def _costes(a: np.ndarray, b: np.ndarray) -> tuple[float, float, float]:
 
 def _image_data(image: Image) -> np.ndarray:
     if image.storage_ref is None and hasattr(image, "_data") and getattr(image, "_data", None) is not None:
-        return np.asarray(image._data)  # type: ignore[attr-defined]
+        return np.asarray(image.to_memory())  # type: ignore[attr-defined]
     return np.asarray(image.to_memory())
 
 
 def _mask_data(mask: Mask, expected_shape: tuple[int, ...]) -> np.ndarray:
     if mask.storage_ref is None and hasattr(mask, "_data") and getattr(mask, "_data", None) is not None:
-        data = np.asarray(mask._data, dtype=bool)  # type: ignore[attr-defined]
+        data = np.asarray(mask.to_memory(), dtype=bool)  # type: ignore[attr-defined]
     else:
         data = np.asarray(mask.to_memory(), dtype=bool)
     if data.shape != expected_shape:

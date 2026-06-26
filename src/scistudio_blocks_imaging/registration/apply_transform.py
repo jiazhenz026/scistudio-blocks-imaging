@@ -108,7 +108,7 @@ def _require_interpolation(config: BlockConfig) -> str:
 
 def _transform_matrix(transform: Transform) -> np.ndarray:
     if transform.storage_ref is None and hasattr(transform, "_data") and getattr(transform, "_data", None) is not None:
-        matrix = np.asarray(transform._data, dtype=np.float64)  # type: ignore[attr-defined]
+        matrix = np.asarray(transform.to_memory(), dtype=np.float64)  # type: ignore[attr-defined]
     else:
         matrix = np.asarray(transform.to_memory(), dtype=np.float64)
 

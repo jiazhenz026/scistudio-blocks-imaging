@@ -37,8 +37,9 @@ def test_t_img_002_class_has_required_classvars() -> None:
     assert LoadImage.name == "Load Image"
     assert LoadImage.subcategory == "io"
     assert LoadImage.direction == "input"
-    assert "path" in LoadImage.config_schema["properties"]
-    assert LoadImage.config_schema["required"] == ["path"]
+    # `path` is supplied by the IOBlock input framework, not the block's own
+    # config_schema; the block declares only its own params (e.g. `axes`).
+    assert "axes" in LoadImage.config_schema["properties"]
     assert len(LoadImage.output_ports) == 1
     assert LoadImage.output_ports[0].name == "images"
 
@@ -59,7 +60,7 @@ def test_load_single_tif_round_trip(tmp_path: Path) -> None:
     assert isinstance(img_out, Image)
     assert img_out.axes == ["y", "x"]
     assert img_out.shape == (4, 5)
-    assert np.array_equal(img_out._data, arr)
+    assert np.array_equal(img_out.to_memory(), arr)
     assert img_out.meta is not None
     assert img_out.meta.source_file == str(out_path)
 
@@ -76,7 +77,7 @@ def test_load_3d_tif_preserves_axes_via_tiff_metadata(tmp_path: Path) -> None:
     loaded = LoadImage().load(BlockConfig(params={"path": str(out_path)}))
     img_out = loaded[0]
     assert img_out.axes == ["c", "y", "x"]
-    assert np.array_equal(img_out._data, arr)
+    assert np.array_equal(img_out.to_memory(), arr)
 
 
 def test_load_zarr_round_trip_preserves_axes(tmp_path: Path) -> None:
@@ -92,7 +93,7 @@ def test_load_zarr_round_trip_preserves_axes(tmp_path: Path) -> None:
     img_out = loaded[0]
     assert img_out.axes == ["c", "y", "x"]
     assert img_out.shape == (3, 5, 7)
-    assert np.array_equal(img_out._data, arr)
+    assert np.array_equal(img_out.to_memory(), arr)
 
 
 def test_load_unsupported_extension_raises(tmp_path: Path) -> None:
@@ -173,8 +174,8 @@ def test_load_multi_path_contents_match_sources(tmp_path: Path) -> None:
 
     assert result[0].shape == (2, 3)
     assert result[1].shape == (4, 5)
-    assert np.array_equal(result[0]._data, arr1)
-    assert np.array_equal(result[1]._data, arr2)
+    assert np.array_equal(result[0].to_memory(), arr1)
+    assert np.array_equal(result[1].to_memory(), arr2)
 
 
 def test_load_multi_path_single_element_list(tmp_path: Path) -> None:

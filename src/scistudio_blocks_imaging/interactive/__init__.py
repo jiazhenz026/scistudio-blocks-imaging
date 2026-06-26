@@ -74,7 +74,7 @@ def _prepare_image_exchange(
         path = input_dir / f"image_{index:04d}.tif"
         # Materialise image data (in-memory or from storage_ref).
         if image.storage_ref is None and getattr(image, "_data", None) is not None:
-            data = np.asarray(image._data)  # type: ignore[attr-defined]
+            data = np.asarray(image.to_memory())  # type: ignore[attr-defined]
         else:
             data = np.asarray(image.to_memory())
         tifffile.imwrite(str(path), data, metadata={"axes": "".join(image.axes).upper()})
@@ -191,7 +191,7 @@ def _stage_image_input(
         port_dir.mkdir(exist_ok=True)
         path = port_dir / f"{port_name}_{index:04d}.tif"
     if image.storage_ref is None and getattr(image, "_data", None) is not None:
-        data = np.asarray(image._data)  # type: ignore[attr-defined]
+        data = np.asarray(image.to_memory())  # type: ignore[attr-defined]
     else:
         data = np.asarray(image.to_memory())
     tifffile.imwrite(str(path), data, metadata={"axes": "".join(image.axes).upper()})

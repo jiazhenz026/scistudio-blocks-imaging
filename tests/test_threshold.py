@@ -43,7 +43,7 @@ def test_threshold_otsu_returns_mask() -> None:
 
     assert isinstance(mask, Mask)
     assert mask.dtype == bool
-    assert np.count_nonzero(np.asarray(mask._data)) > 0
+    assert np.count_nonzero(np.asarray(mask.to_memory())) > 0
 
 
 def test_threshold_manual_without_value_raises() -> None:
@@ -73,8 +73,8 @@ def test_threshold_adaptive_otsu_broadcasts_5d() -> None:
     )
 
     assert mask.shape == arr.shape
-    assert np.asarray(mask._data).dtype == bool
-    assert np.count_nonzero(np.asarray(mask._data)) > 0
+    assert np.asarray(mask.to_memory()).dtype == bool
+    assert np.count_nonzero(np.asarray(mask.to_memory())) > 0
 
 
 def test_threshold_run_returns_collection_of_mask() -> None:

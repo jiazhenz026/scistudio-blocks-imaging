@@ -187,7 +187,7 @@ def _load_png(path: Path, axes_override: list[str] | None = None, **_: Any) -> I
         # P2-01 (Phase C1 audit, issue #1296): capture the pixel buffer
         # before reconstructing `img` so the rewritten-labels Image
         # carries the decoded pixels rather than `np.asarray([])`.
-        source_data = img._data  # type: ignore[attr-defined]
+        source_data = img.to_memory()  # type: ignore[attr-defined]
         img = Image(
             axes=axes_override,
             shape=img.shape,
@@ -209,7 +209,7 @@ def _load_jpeg(path: Path, axes_override: list[str] | None = None, **_: Any) -> 
             )
         # P2-01 (Phase C1 audit, issue #1296): preserve decoded pixels —
         # see `_load_png` for context.
-        source_data = img._data  # type: ignore[attr-defined]
+        source_data = img.to_memory()  # type: ignore[attr-defined]
         img = Image(
             axes=axes_override,
             shape=img.shape,

@@ -139,7 +139,7 @@ def _scalar_value(config: BlockConfig) -> float:
 
 def _image_data(image: Image) -> np.ndarray:
     if image.storage_ref is None and hasattr(image, "_data") and getattr(image, "_data", None) is not None:
-        return np.asarray(image._data)  # type: ignore[attr-defined]
+        return np.asarray(image.to_memory())  # type: ignore[attr-defined]
     return np.asarray(image.to_memory())
 
 

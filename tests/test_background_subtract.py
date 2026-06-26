@@ -39,7 +39,7 @@ def test_background_constant_subtracts_value() -> None:
         img,
         BlockConfig(params={"method": "constant", "value": 3.0, "clip_to_zero": False}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert np.allclose(out_arr, 7.0)
 
 
@@ -50,7 +50,7 @@ def test_background_constant_clip_to_zero_clamps() -> None:
         img,
         BlockConfig(params={"method": "constant", "value": 10.0, "clip_to_zero": True}),
     )
-    assert float(np.asarray(out._data).min()) == 0.0
+    assert float(np.asarray(out.to_memory()).min()) == 0.0
 
 
 def test_background_tophat_2d_runs() -> None:
@@ -77,7 +77,7 @@ def test_background_polynomial_2d_runs() -> None:
         img,
         BlockConfig(params={"method": "polynomial", "degree": 1, "clip_to_zero": False}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     # Degree-1 poly fits a linear gradient exactly → residual ~0.
     assert float(np.abs(out_arr).max()) < 1e-8
 
@@ -103,4 +103,4 @@ def test_background_5d_iterates_over_extra_axes() -> None:
     )
     assert out.axes == ["t", "c", "y", "x"]
     assert out.shape == (2, 2, 6, 6)
-    assert np.allclose(np.asarray(out._data), 3.0)
+    assert np.allclose(np.asarray(out.to_memory()), 3.0)

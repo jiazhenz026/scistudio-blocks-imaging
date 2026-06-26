@@ -46,7 +46,7 @@ def test_compute_registration_phase_correlation_recovers_translation() -> None:
     )
 
     transform = result["transform"][0]
-    matrix = np.asarray(transform._data)
+    matrix = np.asarray(transform.to_memory())
     assert matrix.shape == (2, 3)
     assert matrix[0, 2] == pytest.approx(2.0, abs=0.2)
     assert matrix[1, 2] == pytest.approx(-3.0, abs=0.2)
@@ -70,7 +70,7 @@ def test_compute_registration_rigid_and_affine_methods_return_transforms(method:
     )
 
     transform = result["transform"][0]
-    assert np.asarray(transform._data).shape == shape
+    assert np.asarray(transform.to_memory()).shape == shape
     assert transform.meta is not None
     assert transform.meta.transform_type == method
 
@@ -101,7 +101,7 @@ def test_apply_transform_translates_image() -> None:
         BlockConfig(params={"interpolation": "nearest"}),
     )
 
-    warped = np.asarray(result["warped"][0]._data)
+    warped = np.asarray(result["warped"][0].to_memory())
     expected = np.zeros_like(arr)
     expected[5:9, 8:12] = 1.0
     assert np.array_equal(warped, expected)
@@ -140,7 +140,7 @@ def test_register_series_aligns_frames_to_reference() -> None:
         BlockConfig(params={"axis": "t", "reference_frame": 0, "method": "phase_correlation"}),
     )
 
-    registered = np.asarray(result["registered"][0]._data)
+    registered = np.asarray(result["registered"][0].to_memory())
     assert np.array_equal(registered[0], frame)
     assert np.array_equal(registered[1], frame)
 

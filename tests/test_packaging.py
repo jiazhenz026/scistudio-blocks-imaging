@@ -64,7 +64,7 @@ def test_pyproject_lists_runtime_dependencies() -> None:
 
     dependencies = set(data["project"]["dependencies"])
     assert {
-        "scistudio>=0.2",
+        "scistudio>=0.2.1a0",
         "numpy>=1.24",
         "scipy>=1.11",
         "scikit-image>=0.22",

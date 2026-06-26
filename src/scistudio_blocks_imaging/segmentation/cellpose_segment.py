@@ -110,7 +110,7 @@ class CellposeSegment(ProcessBlock):
                 # so the output's OME ``size_t``/``size_z``/``size_c``
                 # are collapsed to 1 to match the 2D label raster
                 # (Codex P1 reconciliation 2026-05-20).
-                raster_data = label.slots["raster"]._data  # type: ignore[attr-defined]
+                raster_data = label.slots["raster"].to_memory()  # type: ignore[attr-defined]
                 mask_img = Image(
                     axes=["y", "x"],
                     shape=tuple(raster_data.shape),
@@ -238,7 +238,7 @@ def _coerce_channels(value: object) -> list[int]:
 
 def _image_data(image: Image) -> np.ndarray:
     if image.storage_ref is None and hasattr(image, "_data") and getattr(image, "_data", None) is not None:
-        return np.asarray(image._data)  # type: ignore[attr-defined]
+        return np.asarray(image.to_memory())  # type: ignore[attr-defined]
     return np.asarray(image.to_memory())
 
 

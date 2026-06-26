@@ -35,7 +35,7 @@ def test_fft_lowpass_2d() -> None:
         _make_image(checker, ["y", "x"]),
         BlockConfig(params={"type": "lowpass", "cutoff_high": 0.15}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert out.shape == (32, 32)
     assert float(out_arr.std()) < float(checker.std())
 

@@ -204,7 +204,7 @@ def test_installed_entry_point_registers_imaging_previewers(monkeypatch: pytest.
 
     reg = PreviewerRegistry()
     reg.load_core()
-    reg.load_packages(include_monorepo=False)
+    reg.load_packages()
 
     ids = {s.previewer_id for s in reg.all_specs()}
     assert {IMAGE_PREVIEWER_ID, LABEL_PREVIEWER_ID} <= ids
@@ -273,7 +273,7 @@ def test_monorepo_discovery_registers_imaging_previewers() -> None:
     """The registry's monorepo dev fallback discovers get_previewers() via the package."""
     reg = PreviewerRegistry()
     reg.load_core()
-    reg.load_packages(include_monorepo=True)
+    reg.load_packages()
     ids = {s.previewer_id for s in reg.all_specs()}
     assert IMAGE_PREVIEWER_ID in ids
     assert LABEL_PREVIEWER_ID in ids

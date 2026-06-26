@@ -36,7 +36,7 @@ def test_sharpen_unsharp_2d() -> None:
         _make_image(arr, ["y", "x"]),
         BlockConfig(params={"method": "unsharp", "amount": 1.5, "radius": 1.0}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert out.shape == (16, 16)
     assert not np.allclose(out_arr, arr)
 
