@@ -6,6 +6,11 @@ All notable changes to this package are documented here. The format follows
 
 ## [Unreleased]
 
+- OTA hot-update support (#1784): self-declared update source via
+  `PackageInfo.ota` / `[tool.scistudio.ota]`; `scripts/ota_publish.py`
+  publishes manifest + snapshot to the package's own `ota-<channel>`
+  GitHub pre-release for the in-app Package Manager.
+
 ### Added
 
 - Package governance from `scistudio-package-template`: CI (lint, type, test,

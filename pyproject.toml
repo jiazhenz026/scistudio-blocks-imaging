@@ -66,6 +66,14 @@ imaging = "scistudio_blocks_imaging:get_types"
 [project.entry-points."scistudio.previewers"]
 imaging = "scistudio_blocks_imaging.previewers:get_previewers"
 
+# OTA hot-update source (#1784). Publish-time source of truth for
+# scripts/ota_publish.py; mirrored in PackageInfo.ota (src/.../__init__.py),
+# enforced equal by scripts/validate_contract.py.
+[tool.scistudio.ota]
+manifest_url = "https://github.com/jiazhenz026/scistudio-blocks-imaging/releases/download/ota-alpha/manifest.json"
+channel = "alpha"
+min_core_base = "0.2.1"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/scistudio_blocks_imaging"]
 # ADR-048 SPEC 1 (FR-024): the packaged previewer ships a self-contained vanilla
