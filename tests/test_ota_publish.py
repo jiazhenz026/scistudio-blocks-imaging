@@ -82,19 +82,30 @@ def test_build_manifest_shape():
     assert manifest["sha256"] == "a" * 64
 
 
-def test_make_snapshot_round_trips(tmp_path):
-    src = tmp_path / "src" / "scistudio_blocks_demo"
-    src.mkdir(parents=True)
-    (src / "__init__.py").write_text("BLOCKS = []\n", encoding="utf-8")
-    (src / "__pycache__").mkdir()
-    (src / "__pycache__" / "x.pyc").write_bytes(b"junk")
+def test_make_snapshot_packs_build_complete_root(tmp_path):
+    # The snapshot must be a build-complete source package (pyproject + readme +
+    # src), because the client installs it with pip/hatchling, which validates
+    # files referenced by pyproject (e.g. readme). VCS/cache dirs are excluded.
+    root = tmp_path / "pkg"
+    pkg = root / "src" / "scistudio_blocks_demo"
+    pkg.mkdir(parents=True)
+    (root / "pyproject.toml").write_text('[project]\nname = "x"\nversion = "0.1.0"\n', encoding="utf-8")
+    (root / "README.md").write_text("# x\n", encoding="utf-8")
+    (pkg / "__init__.py").write_text("BLOCKS = []\n", encoding="utf-8")
+    (pkg / "__pycache__").mkdir()
+    (pkg / "__pycache__" / "x.pyc").write_bytes(b"junk")
+    (root / ".git").mkdir()
+    (root / ".git" / "config").write_text("x", encoding="utf-8")
 
-    out = tmp_path / "snap.tar.gz"
-    ota_publish.make_snapshot(tmp_path / "src", out)
+    out = tmp_path / "snap.tar.gz"  # output lives outside the packed root
+    ota_publish.make_snapshot(root / "src", out)
 
     import tarfile
 
     with tarfile.open(out) as tar:
-        names = tar.getnames()
+        names = {n[2:] if n.startswith("./") else n for n in tar.getnames()}
+    assert "pyproject.toml" in names
+    assert "README.md" in names
     assert "src/scistudio_blocks_demo/__init__.py" in names
     assert not any("__pycache__" in n or n.endswith(".pyc") for n in names)
+    assert ".git" not in names and not any(n.startswith(".git/") for n in names)

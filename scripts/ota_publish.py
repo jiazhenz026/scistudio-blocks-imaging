@@ -128,21 +128,46 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def make_snapshot(src_dir: Path, out_path: Path) -> None:
-    """Pack ``src_dir`` into ``out_path`` as a gzip tarball rooted at ``src/``.
+_SNAPSHOT_EXCLUDE_DIRS = {
+    ".git",
+    ".github",
+    "__pycache__",
+    "dist",
+    "build",
+    ".venv",
+    "venv",
+    "node_modules",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+}
 
-    Extracting yields ``<dest>/src/scistudio_blocks_*/...`` so the installer can
-    treat it like any source-package archive. ``__pycache__`` is skipped.
+
+def make_snapshot(src_dir: Path, out_path: Path) -> None:
+    """Pack the whole installable package root into ``out_path`` as a gzip tarball.
+
+    The archive must be a *build-complete* source package: the client installs
+    it with ``pip install`` (hatchling), which validates files referenced by
+    ``pyproject.toml`` such as ``readme = "README.md"`` and the license. Packing
+    only ``src/`` (or only ``pyproject.toml`` + ``src/``) makes the build fail
+    with "Readme file does not exist" and loses the real name/version. So pack
+    the package root (``pyproject.toml``, ``README.md``, ``LICENSE``, ``src/``,
+    …), excluding VCS, build, and cache dirs.
     """
+    root = src_dir.parent
 
     def _filter(info: tarfile.TarInfo) -> tarfile.TarInfo | None:
         parts = Path(info.name).parts
-        if "__pycache__" in parts or info.name.endswith(".pyc"):
+        if any(part in _SNAPSHOT_EXCLUDE_DIRS for part in parts):
+            return None
+        if any(part.endswith(".egg-info") for part in parts):
+            return None
+        if info.name.endswith(".pyc") or info.name.endswith(".DS_Store"):
             return None
         return info
 
     with tarfile.open(out_path, "w:gz") as tar:
-        tar.add(src_dir, arcname="src", filter=_filter)
+        tar.add(root, arcname=".", filter=_filter)
 
 
 # --------------------------------------------------------------------------- #
