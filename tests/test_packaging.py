@@ -3,9 +3,11 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
-from scistudio.blocks.base.package_info import PackageInfo
+from scistudio.blocks.base.package_info import PackageInfo, PackageOtaSource
 
 from scistudio_blocks_imaging import (
+    OTA_CHANNEL,
+    OTA_MANIFEST_URL,
     __version__,
     get_block_package,
     get_blocks,
@@ -36,6 +38,7 @@ def test_get_package_info_matches_release_metadata() -> None:
         description="Microscopy imaging blocks for SciStudio Phase 11 workflows.",
         author="SciStudio Contributors",
         version="0.1.0",
+        ota=PackageOtaSource(manifest_url=OTA_MANIFEST_URL, channel=OTA_CHANNEL),
     )
 
 
