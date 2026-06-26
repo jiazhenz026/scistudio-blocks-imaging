@@ -7,13 +7,13 @@ from collections.abc import Sequence
 from typing import Any, ClassVar, cast
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
 from scistudio.core.types.array import Array
 from scistudio.core.types.base import DataObject
 from scistudio.core.types.collection import Collection
+
 from scistudio_blocks_imaging.types import Image, Label
 
 logger = logging.getLogger(__name__)

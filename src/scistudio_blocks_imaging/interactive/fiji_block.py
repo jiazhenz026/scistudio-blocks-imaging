@@ -9,6 +9,7 @@ from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.base.state import ExecutionMode
 from scistudio.core.types.collection import Collection
+
 from scistudio_blocks_imaging.interactive import (
     _prepare_configured_input_exchange,
     _resolve_command,

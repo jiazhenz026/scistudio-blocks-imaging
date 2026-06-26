@@ -6,7 +6,6 @@ from collections.abc import Sequence
 from typing import Any, ClassVar, cast
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
@@ -14,6 +13,7 @@ from scistudio.core.types.base import DataObject
 from scistudio.core.types.collection import Collection
 from scistudio.core.units import PhysicalQuantity
 from scistudio.utils.axis_iter import iterate_over_axes
+
 from scistudio_blocks_imaging.types import Image, Mask
 
 _ROTATE_INTERPOLATION_ORDERS: dict[str, int] = {

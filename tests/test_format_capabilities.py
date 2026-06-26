@@ -16,11 +16,11 @@ The Bio-Formats family is intentionally absent from SaveImage because
 from __future__ import annotations
 
 import pytest
+from scistudio.blocks.io.capabilities import FormatCapability, MetadataFidelity
+
 from scistudio_blocks_imaging.io.load_image import LoadImage
 from scistudio_blocks_imaging.io.save_image import SaveImage
 from scistudio_blocks_imaging.types import Image
-
-from scistudio.blocks.io.capabilities import FormatCapability, MetadataFidelity
 
 _EXPECTED_LOAD_CAPABILITY_IDS: set[str] = {
     "scistudio-blocks-imaging.image.tiff.load",
@@ -390,10 +390,10 @@ def test_sc_003_ome_metadata_survives_tiff_round_trip(tmp_path) -> None:
     the axes string, so the saved TIFF lost OME on a round-trip.
     """
     import numpy as np
+    from scistudio.blocks.base.config import BlockConfig
+
     from scistudio_blocks_imaging.io.load_image import LoadImage
     from scistudio_blocks_imaging.io.save_image import SaveImage
-
-    from scistudio.blocks.base.config import BlockConfig
 
     if not _ome_xml_round_trip_available():
         pytest.skip(

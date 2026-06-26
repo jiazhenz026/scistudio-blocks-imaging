@@ -8,7 +8,6 @@ from typing import Any, ClassVar
 import numpy as np
 from ome_types.model import OME
 from pydantic import BaseModel, ConfigDict, field_validator
-
 from scistudio.core.meta import ChannelInfo
 from scistudio.core.types.array import Array
 from scistudio.core.types.composite import CompositeData

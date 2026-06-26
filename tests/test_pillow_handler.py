@@ -21,6 +21,7 @@ import pytest
 # politely if the install is incomplete rather than erroring at import.
 pytest.importorskip("PIL.Image")
 from PIL import Image as PILImage
+
 from scistudio_blocks_imaging.io.pillow_handler import _load_jpeg, _load_png
 
 

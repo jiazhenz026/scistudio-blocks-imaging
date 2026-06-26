@@ -12,12 +12,12 @@ from __future__ import annotations
 from typing import Any, ClassVar, cast
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
 from scistudio.core.types.collection import Collection
 from scistudio.utils.axis_iter import iterate_over_axes
+
 from scistudio_blocks_imaging.types import Image
 
 _ALLOWED_METHODS = frozenset({"basic", "BaSiC"})
@@ -101,7 +101,8 @@ class FlatFieldCorrect(ProcessBlock):
                     "FlatFieldCorrect: method='BaSiC' requires the 'basicpy' "
                     "package. Install it with: pip install basicpy"
                 ) from exc
-            # TODO: T-IMG-007 — implement the BaSiC flat-field correction method (currently only the literal 'basic' formula is wired).
+            # TODO: T-IMG-007 — implement the BaSiC flat-field correction method
+            #   (currently only the literal 'basic' formula is wired).
             raise NotImplementedError(
                 "FlatFieldCorrect: method='BaSiC' is deferred from the T-IMG-007 "
                 "pilot; use method='basic' for the literal formula."

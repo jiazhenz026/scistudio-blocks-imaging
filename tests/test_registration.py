@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from scistudio.blocks.base.config import BlockConfig
+from scistudio.core.types.collection import Collection
+
 from scistudio_blocks_imaging.registration.apply_transform import ApplyTransform
 from scistudio_blocks_imaging.registration.compute_registration import ComputeRegistration
 from scistudio_blocks_imaging.registration.register_series import RegisterSeries
 from scistudio_blocks_imaging.types import Image, Transform
-
-from scistudio.blocks.base.config import BlockConfig
-from scistudio.core.types.collection import Collection
 
 
 def _make_image(arr: np.ndarray, axes: list[str] | None = None) -> Image:

@@ -3,6 +3,8 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
+from scistudio.blocks.base.package_info import PackageInfo
+
 from scistudio_blocks_imaging import (
     __version__,
     get_block_package,
@@ -12,8 +14,6 @@ from scistudio_blocks_imaging import (
 )
 from scistudio_blocks_imaging.tracking.track_objects import TrackObjects
 from scistudio_blocks_imaging.types import Image, Label, Mask, Transform
-
-from scistudio.blocks.base.package_info import PackageInfo
 
 
 def test_get_blocks_returns_all_concrete_imaging_blocks() -> None:

@@ -6,11 +6,11 @@ import importlib
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging.segmentation.blob_detect import BlobDetect
-from scistudio_blocks_imaging.types import Image, Label
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.core.types.collection import Collection
+
+from scistudio_blocks_imaging.segmentation.blob_detect import BlobDetect
+from scistudio_blocks_imaging.types import Image, Label
 
 
 def _make_image(arr: np.ndarray, axes: list[str] | None = None) -> Image:

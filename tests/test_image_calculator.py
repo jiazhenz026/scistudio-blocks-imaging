@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging.math.image_calculator import ImageCalculator
-from scistudio_blocks_imaging.types import Image
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.core.types.collection import Collection
+
+from scistudio_blocks_imaging.math.image_calculator import ImageCalculator
+from scistudio_blocks_imaging.types import Image
 
 
 def _make_image(arr: np.ndarray, axes: list[str] | None = None) -> Image:

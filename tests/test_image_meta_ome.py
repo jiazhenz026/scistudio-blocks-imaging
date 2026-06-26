@@ -20,9 +20,9 @@ import numpy as np
 import pytest
 from ome_types.model import OME, Pixels, PixelType
 from ome_types.model import Image as OMEImage
-from scistudio_blocks_imaging.types import Image, Label
-
 from scistudio.core.types.array import Array
+
+from scistudio_blocks_imaging.types import Image, Label
 
 
 def _make_ome(physical_size_x: float = 0.5, size_x: int = 10, size_y: int = 20) -> OME:

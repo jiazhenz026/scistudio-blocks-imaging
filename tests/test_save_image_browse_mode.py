@@ -44,12 +44,12 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging.io.save_image import SaveImage
-from scistudio_blocks_imaging.types import Image
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.registry import _merge_config_schema
 from scistudio.core.types.collection import Collection
+
+from scistudio_blocks_imaging.io.save_image import SaveImage
+from scistudio_blocks_imaging.types import Image
 
 
 def _make_image(arr: np.ndarray, axes: list[str]) -> Image:

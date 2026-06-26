@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Core (scistudio) is private and not on PyPI. CI installs it from the
+  # private GitHub repo. Add a repository secret SCISTUDIO_CORE_TOKEN — a PAT
+  # (classic: `repo` scope, or fine-grained: read access to the core repo).
+  # When core is published to PyPI, delete the "Install SciStudio core" steps
+  # and let pip resolve `scistudio` from the dependency floor.
+  SCISTUDIO_CORE_REPO: jiazhenz026/SciStudio
+  SCISTUDIO_CORE_REF: main
+
+jobs:
+  quality:
+    name: Lint · Type · Test · Contract
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install SciStudio core (private)
+        run: |
+          python -m pip install --upgrade pip
+          pip install "scistudio @ git+https://x-access-token:${SCISTUDIO_CORE_TOKEN}@github.com/${SCISTUDIO_CORE_REPO}.git@${SCISTUDIO_CORE_REF}"
+        env:
+          SCISTUDIO_CORE_TOKEN: ${{ secrets.SCISTUDIO_CORE_TOKEN }}
+
+      - name: Install package (dev extras)
+        run: pip install -e ".[dev]"
+
+      - name: Ruff format
+        run: ruff format --check .
+
+      - name: Ruff lint
+        run: ruff check .
+
+      # mypy targets python_version 3.11 (matches SciStudio core). Run it only
+      # on the 3.11 leg: under 3.12 the installed numpy stubs use PEP 695 `type`
+      # statements that a 3.11 target cannot parse.
+      - name: Mypy
+        if: matrix.python-version == '3.11'
+        run: mypy src
+
+      - name: Pytest
+        run: pytest
+
+      - name: Validate SciStudio contract
+        run: python scripts/validate_contract.py
+
+  build-wheel:
+    name: Build .whl
+    # Independent of `quality`: the wheel build needs neither core nor the
+    # token, so it always runs and reports on its own rather than being skipped
+    # when a quality leg fails.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The wheel build does not need core: build isolation only installs the
+      # build backend (hatchling), and runtime deps are recorded, not resolved.
+      - name: Build wheel + sdist
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-dist
+          path: dist/*
+          if-no-files-found: error

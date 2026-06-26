@@ -16,11 +16,11 @@ from collections.abc import Callable
 from typing import Any, ClassVar, cast
 
 import numpy as np
-
 from scistudio.blocks.base.config import BlockConfig
 from scistudio.blocks.base.ports import InputPort, OutputPort
 from scistudio.blocks.process.process_block import ProcessBlock
 from scistudio.utils.axis_iter import iterate_over_axes
+
 from scistudio_blocks_imaging.types import Image
 
 _PILOT_METHODS = frozenset({"minmax", "zscore", "percentile"})
@@ -86,7 +86,8 @@ class Normalize(ProcessBlock):
         if method not in _ALL_METHODS:
             raise ValueError(f"Normalize: unknown method {method!r}; expected one of {sorted(_ALL_METHODS)}")
         if method in _DEFERRED_METHODS:
-            # TODO: T-IMG-006 — implement histogram_match normalization (needs adding a reference-image input port to the block).
+            # TODO: T-IMG-006 — implement histogram_match normalization
+            #   (needs adding a reference-image input port to the block).
             raise NotImplementedError(
                 f"Normalize: method {method!r} is deferred from the T-IMG-006 "
                 "pilot (requires reference-image input port)."

@@ -31,15 +31,6 @@ from typing import cast
 
 import numpy as np
 import pytest
-from scistudio_blocks_imaging import get_previewers as pkg_get_previewers
-from scistudio_blocks_imaging.previewers import (
-    IMAGE_PREVIEWER_ID,
-    LABEL_PREVIEWER_ID,
-    get_previewers,
-    image_provider,
-    label_provider,
-)
-
 from scistudio.previewers.assets import resolve_asset, validate_manifest
 from scistudio.previewers.fallbacks import core_previewer_specs
 from scistudio.previewers.models import (
@@ -54,6 +45,15 @@ from scistudio.previewers.models import (
 from scistudio.previewers.registry import PreviewerRegistry
 from scistudio.previewers.router import PreviewRouter
 from scistudio.previewers.session import PreviewSessionManager
+
+from scistudio_blocks_imaging import get_previewers as pkg_get_previewers
+from scistudio_blocks_imaging.previewers import (
+    IMAGE_PREVIEWER_ID,
+    LABEL_PREVIEWER_ID,
+    get_previewers,
+    image_provider,
+    label_provider,
+)
 
 # Recorded type chains (general -> specific) the router walks. Image extends
 # Array; Label extends CompositeData.
@@ -324,7 +324,6 @@ def test_image_provider_returns_valid_envelope_without_self_embedding(
 def test_image_provider_reads_tiff_inside_imaging_package(tmp_path: Path) -> None:
     """TIFF decoding is package-owned; the Image provider must not rely on core."""
     import tifffile
-
     from scistudio.previewers.data_access import PreviewDataAccess
 
     spec = _image_spec()
