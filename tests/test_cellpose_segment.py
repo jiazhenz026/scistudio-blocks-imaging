@@ -312,7 +312,7 @@ def test_cellpose_custom_model_requires_path(monkeypatch: pytest.MonkeyPatch) ->
         CellposeSegment().setup(BlockConfig(params={"model": "custom"}))
 
 
-def test_cellpose_round_trip_serialise(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_cellpose_round_trip_serialise(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     import scistudio.core.types.serialization as serialization_module
 
     _patch_fake_models(monkeypatch)
@@ -327,6 +327,11 @@ def test_cellpose_round_trip_serialise(monkeypatch: pytest.MonkeyPatch) -> None:
         label = block.process_item(
             _make_image(np.ones((5, 5), dtype=np.float32), ["y", "x"]), BlockConfig(params={}), state
         )
+        # Persist the composite and its slots before serialising (ADR-031:
+        # serialisation reads from storage, recursing into each slot Array).
+        for _name, _slot in label.slots.items():
+            _slot.save(str(tmp_path / f"{_name}.zarr"))
+        label.save(str(tmp_path / "label.zarr"))
         payload = _serialise_one(label)
         restored = _reconstruct_one(payload)
     finally:

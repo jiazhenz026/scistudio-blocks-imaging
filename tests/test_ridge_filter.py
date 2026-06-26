@@ -36,7 +36,7 @@ def test_ridge_frangi_2d() -> None:
         _make_image(arr, ["y", "x"]),
         BlockConfig(params={"method": "frangi", "sigma_min": 1.0, "sigma_max": 2.0, "num_sigma": 2}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert out.shape == (32, 32)
     assert float(out_arr.max()) > 0.0
 

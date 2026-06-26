@@ -46,7 +46,7 @@ def test_flatfield_basic_no_dark_uniform() -> None:
     out_col = result["image"]
     assert isinstance(out_col, Collection)
     out = out_col[0]
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     # out = image / flat * mean(flat) = 10/2 * 2 = 10.
     assert np.allclose(out_arr, 10.0)
 
@@ -65,7 +65,7 @@ def test_flatfield_basic_with_dark_frame() -> None:
         BlockConfig(params={"method": "basic"}),
     )
     out = result["image"][0]
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     # (12-2)/(4-2) * mean(4-2) = 10/2 * 2 = 10.
     assert np.allclose(out_arr, 10.0)
 
@@ -97,7 +97,7 @@ def test_flatfield_zero_flat_handled_without_nan() -> None:
         {"image": _make_col(image), "flat_field": _make_col(flat)},
         BlockConfig(params={"method": "basic"}),
     )
-    out_arr = np.asarray(result["image"][0]._data)
+    out_arr = np.asarray(result["image"][0].to_memory())
     assert not np.isnan(out_arr).any()
 
 
@@ -112,7 +112,7 @@ def test_flatfield_5d_iterates_per_slice() -> None:
     out = result["image"][0]
     assert out.axes == ["t", "c", "y", "x"]
     assert out.shape == (2, 3, 4, 4)
-    assert np.allclose(np.asarray(out._data), 10.0)
+    assert np.allclose(np.asarray(out.to_memory()), 10.0)
 
 
 def test_flatfield_basic_method_default() -> None:

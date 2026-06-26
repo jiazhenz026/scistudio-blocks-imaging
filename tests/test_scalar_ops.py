@@ -22,7 +22,7 @@ def test_add_scalar_adds_value() -> None:
 
     result = AddScalar().process_item(image, BlockConfig(params={"value": 2.5}))
 
-    assert np.allclose(result._data, image._data + 2.5)
+    assert np.allclose(result.to_memory(), image.to_memory() + 2.5)
     assert result.axes == image.axes
 
 
@@ -31,7 +31,7 @@ def test_subtract_scalar_subtracts_value() -> None:
 
     result = SubtractScalar().process_item(image, BlockConfig(params={"value": 1.5}))
 
-    assert np.allclose(result._data, image._data - 1.5)
+    assert np.allclose(result.to_memory(), image.to_memory() - 1.5)
 
 
 def test_multiply_scalar_broadcasts_over_extra_axes() -> None:
@@ -41,7 +41,7 @@ def test_multiply_scalar_broadcasts_over_extra_axes() -> None:
     result = MultiplyScalar().process_item(image, BlockConfig(params={"value": 3}))
 
     assert result.shape == image.shape
-    assert np.array_equal(result._data, arr * 3)
+    assert np.array_equal(result.to_memory(), arr * 3)
 
 
 def test_divide_scalar_supports_epsilon() -> None:
@@ -49,7 +49,7 @@ def test_divide_scalar_supports_epsilon() -> None:
 
     result = DivideScalar().process_item(image, BlockConfig(params={"value": 0.0, "epsilon": 2.0}))
 
-    assert np.allclose(result._data, np.array([[1.0, 2.0]], dtype=np.float32))
+    assert np.allclose(result.to_memory(), np.array([[1.0, 2.0]], dtype=np.float32))
 
 
 def test_divide_scalar_zero_denominator_raises() -> None:

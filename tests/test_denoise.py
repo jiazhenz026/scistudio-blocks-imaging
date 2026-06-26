@@ -47,7 +47,7 @@ def test_denoise_gaussian_2d_basic() -> None:
     assert out.axes == ["y", "x"]
     assert out.shape == (16, 16)
     # A gaussian blur reduces variance.
-    assert float(np.asarray(out._data).var()) < float(arr.var())
+    assert float(np.asarray(out.to_memory()).var()) < float(arr.var())
 
 
 def test_denoise_median_2d_removes_salt_noise() -> None:
@@ -55,7 +55,7 @@ def test_denoise_median_2d_removes_salt_noise() -> None:
     arr[4, 4] = 100.0  # single spike
     img = _make_image(arr, ["y", "x"])
     out = Denoise().process_item(img, BlockConfig(params={"method": "median", "radius": 1}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     # Median with a disk footprint should drop the lone spike back near 5.
     assert out_arr[4, 4] < 10.0
 

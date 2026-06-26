@@ -106,7 +106,7 @@ def test_blob_5d_broadcast() -> None:
         BlockConfig(params={"method": "LoG", "min_sigma": 2.0, "max_sigma": 8.0, "threshold": 0.05}),
     )
 
-    raster = np.asarray(label.slots["raster"]._data)
+    raster = np.asarray(label.slots["raster"].to_memory())
     assert raster.shape == image.shape
     assert label.meta is not None
     assert label.meta.n_objects >= 8

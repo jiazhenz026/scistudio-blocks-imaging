@@ -83,7 +83,7 @@ class TestImage:
         restored = Image.Meta.model_validate_json(meta.model_dump_json())
         assert restored == meta
 
-    def test_image_serialise_reconstruct_round_trip(self) -> None:
+    def test_image_serialise_reconstruct_round_trip(self, tmp_path) -> None:
         import scistudio.core.types.serialization as serialization_module
 
         registry = TypeRegistry()
@@ -92,7 +92,14 @@ class TestImage:
         previous_registry = serialization_module._registry_instance
         serialization_module._registry_instance = registry
         try:
-            image = Image(axes=["t", "z", "y", "x"], shape=(2, 3, 8, 8), dtype=np.float32, meta=_image_meta())
+            image = Image(
+                axes=["t", "z", "y", "x"],
+                shape=(2, 3, 8, 8),
+                dtype=np.float32,
+                data=np.zeros((2, 3, 8, 8), dtype=np.float32),
+                meta=_image_meta(),
+            )
+            image.save(str(tmp_path / "img.zarr"))  # serialisation reads from storage (ADR-031)
             payload = _serialise_one(image)
             restored = _reconstruct_one(payload)
         finally:

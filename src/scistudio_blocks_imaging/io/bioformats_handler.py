@@ -257,7 +257,7 @@ def _apply_axes_override(image: Image, axes_override: list[str] | None) -> Image
         meta=image.meta,
     )
     if hasattr(image, "_data"):
-        relabeled._data = image._data  # type: ignore[attr-defined]
+        relabeled._data = image.to_memory()  # type: ignore[attr-defined]
     return relabeled
 
 

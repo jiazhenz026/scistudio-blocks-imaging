@@ -36,7 +36,7 @@ def test_morphology_erode_2d() -> None:
         _make_image(arr, ["y", "x"]),
         BlockConfig(params={"op": "erode", "selem_shape": "square", "selem_size": 1}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert out.shape == (7, 7)
     assert float(out_arr.sum()) < float(arr.sum())
     assert out_arr[3, 3] == pytest.approx(1.0)
@@ -49,7 +49,7 @@ def test_morphology_dilate_2d() -> None:
         _make_image(arr, ["y", "x"]),
         BlockConfig(params={"op": "dilate", "selem_shape": "cross", "selem_size": 1}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert float(out_arr.sum()) > float(arr.sum())
     assert out_arr[3, 2] == pytest.approx(1.0)
     assert out_arr[2, 3] == pytest.approx(1.0)

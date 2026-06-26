@@ -23,7 +23,7 @@ def test_image_calculator_default_expression_adds() -> None:
 
     result = ImageCalculator().run({"a": left, "b": right}, BlockConfig(params={}))
 
-    assert np.allclose(result["result"]._data, np.array([[4.0, 6.0]], dtype=np.float32))
+    assert np.allclose(result["result"].to_memory(), np.array([[4.0, 6.0]], dtype=np.float32))
 
 
 def test_image_calculator_custom_expression_subtracts() -> None:
@@ -32,7 +32,7 @@ def test_image_calculator_custom_expression_subtracts() -> None:
 
     result = ImageCalculator().run({"a": left, "b": right}, BlockConfig(params={"expression": "a - b"}))
 
-    assert np.allclose(result["result"]._data, np.array([[3.0, 4.0]], dtype=np.float32))
+    assert np.allclose(result["result"].to_memory(), np.array([[3.0, 4.0]], dtype=np.float32))
 
 
 def test_image_calculator_fret_ratio_expression() -> None:
@@ -44,8 +44,8 @@ def test_image_calculator_fret_ratio_expression() -> None:
         BlockConfig(params={"expression": "(a - b) / (a + b)"}),
     )
 
-    expected = (left._data - right._data) / (left._data + right._data)
-    assert np.allclose(result["result"]._data, expected)
+    expected = (left.to_memory() - right.to_memory()) / (left.to_memory() + right.to_memory())
+    assert np.allclose(result["result"].to_memory(), expected)
 
 
 def test_image_calculator_collection_broadcasts_length_one_side() -> None:
@@ -64,8 +64,8 @@ def test_image_calculator_collection_broadcasts_length_one_side() -> None:
     )
 
     assert result["result"].length == 2
-    assert np.array_equal(result["result"][0]._data, np.full((2, 2), 2.0, dtype=np.float32))
-    assert np.array_equal(result["result"][1]._data, np.full((2, 2), 3.0, dtype=np.float32))
+    assert np.array_equal(result["result"][0].to_memory(), np.full((2, 2), 2.0, dtype=np.float32))
+    assert np.array_equal(result["result"][1].to_memory(), np.full((2, 2), 3.0, dtype=np.float32))
 
 
 def test_image_calculator_invalid_variable_raises() -> None:

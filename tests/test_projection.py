@@ -24,7 +24,7 @@ def test_axis_projection_max_drops_axis() -> None:
 
     assert projected.axes == ["y", "x"]
     assert projected.shape == (4, 4)
-    assert np.array_equal(projected._data, np.max(image._data, axis=0))
+    assert np.array_equal(projected.to_memory(), np.max(image.to_memory(), axis=0))
 
 
 def test_axis_projection_clears_channel_metadata() -> None:
@@ -47,14 +47,15 @@ def test_axis_projection_invalid_axis_raises() -> None:
         AxisProjection().process_item(image, BlockConfig(params={"axis": "z", "method": "max"}))
 
 
-def test_select_slice_drops_axis() -> None:
+def test_select_slice_drops_axis(tmp_path) -> None:
     image = _make_image(np.arange(2 * 3 * 4, dtype=np.float32).reshape(2, 3, 4), ["c", "y", "x"])
+    image.save(str(tmp_path / "img.zarr"))  # SelectSlice.sel() reads from storage (ADR-031)
 
     selected = SelectSlice().process_item(image, BlockConfig(params={"axis": "c", "index": 1}))
 
     assert selected.axes == ["y", "x"]
     assert selected.shape == (3, 4)
-    assert np.array_equal(selected._data, image._data[1])
+    assert np.array_equal(selected.to_memory(), image.to_memory()[1])
 
 
 def test_select_slice_rejects_spatial_axis() -> None:

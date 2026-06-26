@@ -31,7 +31,7 @@ def test_rotate_90_degrees_2d() -> None:
     arr = np.array([[1, 2], [3, 4]], dtype=np.float32)
     img = _make_image(arr, ["y", "x"])
     out = Rotate().process_item(img, BlockConfig(params={"angle": 90}))
-    assert np.array_equal(np.asarray(out._data), np.array([[2, 4], [1, 3]], dtype=np.float32))
+    assert np.array_equal(np.asarray(out.to_memory()), np.array([[2, 4], [1, 3]], dtype=np.float32))
 
 
 def test_rotate_invalid_interpolation_raises() -> None:
@@ -44,7 +44,7 @@ def test_flip_y_axis_2d() -> None:
     arr = np.array([[1, 2], [3, 4]], dtype=np.float32)
     img = _make_image(arr, ["y", "x"])
     out = Flip().process_item(img, BlockConfig(params={"axis": "y"}))
-    assert np.array_equal(np.asarray(out._data), np.array([[3, 4], [1, 2]], dtype=np.float32))
+    assert np.array_equal(np.asarray(out.to_memory()), np.array([[3, 4], [1, 2]], dtype=np.float32))
 
 
 def test_crop_bbox_basic() -> None:
@@ -55,7 +55,7 @@ def test_crop_bbox_basic() -> None:
         BlockConfig(params={"bbox": [1, 4, 2, 5]}),
     )["image"][0]
     assert out.shape == (3, 3)
-    assert np.array_equal(np.asarray(out._data), arr[1:4, 2:5])
+    assert np.array_equal(np.asarray(out.to_memory()), arr[1:4, 2:5])
 
 
 def test_pad_constant_mode() -> None:
@@ -63,7 +63,7 @@ def test_pad_constant_mode() -> None:
     img = _make_image(arr, ["y", "x"])
     out = Pad().process_item(img, BlockConfig(params={"pad": [1, 0, 2, 1], "mode": "constant", "value": 9}))
     assert out.shape == (3, 5)
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert np.all(out_arr[0] == 9)
     assert np.all(out_arr[:, :2] == 9)
 

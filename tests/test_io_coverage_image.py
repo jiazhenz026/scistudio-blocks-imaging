@@ -47,7 +47,7 @@ def _load_one(path: Path) -> Image:
 @pytest.mark.parametrize("load_ext", IMAGE_EXTS)
 def test_image_load_save_matrix(tmp_path: Path, load_ext: str, save_ext: str) -> None:
     src = _make_image()
-    src_arr = np.asarray(src._data)
+    src_arr = np.asarray(src.to_memory())
 
     # LOAD under test.
     in_path = tmp_path / f"in{load_ext}"

@@ -3,7 +3,7 @@
 P2-01 (Phase C1 audit, issue #1296): the ``axes_override`` branch in
 ``_load_png`` / ``_load_jpeg`` previously silently zeroed the pixel
 buffer because it reassigned ``img`` to a freshly constructed
-``Image`` and then evaluated ``img._data if hasattr(img, "_data")
+``Image`` and then evaluated ``img.to_memory() if hasattr(img, "_data")
 else []`` — the new ``img`` does not yet have ``_data``, so the
 conditional collapsed to ``np.asarray([])``. The fix captures the
 source pixel buffer before reassigning ``img`` so the override only
@@ -48,7 +48,7 @@ def test_load_png_default_axes_returns_decoded_pixels(tmp_path: Path) -> None:
     img = _load_png(tmp_path / "img.png")
     assert img.axes == ["y", "x"]
     assert tuple(img.shape) == src.shape
-    np.testing.assert_array_equal(img._data, src)  # type: ignore[attr-defined]
+    np.testing.assert_array_equal(img.to_memory(), src)  # type: ignore[attr-defined]
 
 
 def test_load_png_axes_override_preserves_pixel_buffer(tmp_path: Path) -> None:
@@ -58,9 +58,9 @@ def test_load_png_axes_override_preserves_pixel_buffer(tmp_path: Path) -> None:
 
     Before the fix the ``axes_override`` branch reassigned ``img`` to a
     new instance without ``_data`` set, then wrote
-    ``np.asarray(img._data if hasattr(img, "_data") else [])`` —
+    ``np.asarray(img.to_memory() if hasattr(img, "_data") else [])`` —
     collapsing to ``np.asarray([])``. This test pins the corrected
-    behaviour: ``img._data`` (and ``img.to_memory()``) returns the
+    behaviour: ``img.to_memory()`` (and ``img.to_memory()``) returns the
     decoded array with the requested axis labels.
     """
     src = _write_grayscale_png(tmp_path / "img.png")
@@ -68,7 +68,7 @@ def test_load_png_axes_override_preserves_pixel_buffer(tmp_path: Path) -> None:
     img = _load_png(tmp_path / "img.png", axes_override=override)
     assert img.axes == override
     # Pixel buffer must be preserved (the bug returned an empty array).
-    data = img._data  # type: ignore[attr-defined]
+    data = img.to_memory()  # type: ignore[attr-defined]
     assert data is not None, "axes_override returned an Image with no _data"
     assert data.size > 0, "axes_override returned a zero-length pixel buffer (P2-01 regression)"
     assert data.shape == src.shape, f"axes_override mutated the array shape: {data.shape} != {src.shape}"
@@ -81,7 +81,7 @@ def test_load_jpeg_axes_override_preserves_pixel_buffer(tmp_path: Path) -> None:
     override = ["x", "y"]
     img = _load_jpeg(tmp_path / "img.jpg", axes_override=override)
     assert img.axes == override
-    data = img._data  # type: ignore[attr-defined]
+    data = img.to_memory()  # type: ignore[attr-defined]
     assert data is not None, "axes_override returned an Image with no _data"
     assert data.size > 0, "axes_override returned a zero-length pixel buffer (P2-01 regression)"
     assert data.shape == src.shape

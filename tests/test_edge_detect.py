@@ -33,7 +33,7 @@ def test_edge_sobel_2d() -> None:
     arr = np.zeros((16, 16), dtype=np.float32)
     arr[:, 8:] = 1.0
     out = EdgeDetect().process_item(_make_image(arr, ["y", "x"]), BlockConfig(params={"method": "sobel"}))
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert out.shape == (16, 16)
     assert float(out_arr.max()) > 0.0
 
@@ -45,7 +45,7 @@ def test_edge_canny_thresholds_param() -> None:
         _make_image(arr, ["y", "x"]),
         BlockConfig(params={"method": "canny", "sigma": 1.0, "low_threshold": 0.1, "high_threshold": 0.3}),
     )
-    out_arr = np.asarray(out._data)
+    out_arr = np.asarray(out.to_memory())
     assert out_arr.dtype == np.bool_
     assert int(out_arr.sum()) > 0
 

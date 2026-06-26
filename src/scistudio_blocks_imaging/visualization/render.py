@@ -388,13 +388,13 @@ def _positive_int_or_none(value: Any) -> int | None:
 
 def _image_data(image: Image) -> np.ndarray:
     if image.storage_ref is None and hasattr(image, "_data") and getattr(image, "_data", None) is not None:
-        return np.asarray(image._data)  # type: ignore[attr-defined]
+        return np.asarray(image.to_memory())  # type: ignore[attr-defined]
     return np.asarray(image.to_memory())
 
 
 def _array_data(array: Array) -> np.ndarray:
     if array.storage_ref is None and hasattr(array, "_data") and getattr(array, "_data", None) is not None:
-        return np.asarray(array._data)  # type: ignore[attr-defined]
+        return np.asarray(array.to_memory())  # type: ignore[attr-defined]
     return np.asarray(array.to_memory())
 
 

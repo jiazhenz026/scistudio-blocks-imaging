@@ -121,7 +121,7 @@ def test_watershed_gradient_with_mask_input() -> None:
     )["label"][0]
 
     assert isinstance(label, Label)
-    assert np.count_nonzero(np.asarray(label.slots["raster"]._data)) > 0
+    assert np.count_nonzero(np.asarray(label.slots["raster"].to_memory())) > 0
 
 
 def test_watershed_5d_broadcast() -> None:
@@ -140,7 +140,7 @@ def test_watershed_5d_broadcast() -> None:
         BlockConfig(params={"method": "distance", "min_distance": 2}),
     )["label"][0]
 
-    raster = np.asarray(label.slots["raster"]._data)
+    raster = np.asarray(label.slots["raster"].to_memory())
     assert raster.shape == image.shape
     assert label.meta is not None
     assert label.meta.n_objects >= 8

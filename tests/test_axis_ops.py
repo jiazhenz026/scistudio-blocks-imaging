@@ -45,7 +45,7 @@ def test_axis_merge_inverse_of_split() -> None:
     merged = AxisMerge().run({"images": split["images"]}, BlockConfig(params={"axis": "c"}))
     out = merged["image"][0]
     assert out.axes == ["c", "y", "x"]
-    assert np.array_equal(np.asarray(out._data), arr)
+    assert np.array_equal(np.asarray(out.to_memory()), arr)
 
 
 def test_axis_merge_inconsistent_shapes_raises() -> None:
