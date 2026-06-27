@@ -88,3 +88,49 @@ jobs:
           name: ${{ github.event.repository.name }}-dist
           path: dist/*
           if-no-files-found: error
+
+  publish-wheel:
+    name: Publish wheel release (v<version>)
+    needs: build-wheel
+    # Version-driven GitHub Release. On every push to `main` the built wheel +
+    # sdist are published to a release tagged from the `pyproject.toml` version
+    # (e.g. v0.1.0). Bumping the version creates a new release; re-merging the
+    # same version refreshes that release's assets. Pull requests and other
+    # branches only build the artifact (above) and never publish.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download built distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-dist
+          path: dist
+
+      - name: Resolve version tag
+        id: ver
+        run: |
+          version=$(python -c 'import tomllib, pathlib; print(tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"])')
+          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish wheel + sdist to the version release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag='${{ steps.ver.outputs.tag }}'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; refreshing its assets."
+          else
+            gh release create "$tag" \
+              --title "$tag" \
+              --notes "Automated wheel build for ${tag}. Install the attached wheel via the SciStudio in-app Package Manager (local install) or \`pip install\`." \
+              --latest
+          fi
+          gh release upload "$tag" dist/* --clobber
