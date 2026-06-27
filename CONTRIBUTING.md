@@ -47,8 +47,11 @@ python -m build                  # wheel + sdist
 1. Bump `version` in `pyproject.toml` and `__version__` in the package
    `__init__.py` (keep them equal).
 2. Add a `CHANGELOG.md` entry.
-3. Tag `vX.Y.Z` on `main`. CI builds the wheel + sdist as artifacts; download
-   and distribute (or install via the SciStudio GUI local package installer).
+3. Merge to `main`. CI builds the wheel + sdist and publishes them to a GitHub
+   Release tagged `vX.Y.Z`, derived from the `pyproject.toml` version — no
+   manual tagging. Bumping the version cuts a new release; re-merging the same
+   version refreshes that release's assets. Users install the attached wheel via
+   the SciStudio in-app Package Manager (local install) or `pip`.
 
 ## Compatibility with core
 
