@@ -6,6 +6,13 @@ All notable changes to this package are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Bump `VIEWER_BUNDLE_VERSION` `0.1.0` → `0.1.1` so the previewer manifest
+  reports a fresh fingerprint for the restyled `viewer.js` (#11); without the
+  bump a client that already loaded the previewer could keep serving the old,
+  pre-restyle viewer from cache after an upgrade / OTA refresh.
+
 ### Changed
 
 - **Conform `types` + `previewers` to the ADR-052 §13.1 developer contract**
