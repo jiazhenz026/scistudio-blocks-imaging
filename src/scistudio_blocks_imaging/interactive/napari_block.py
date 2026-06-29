@@ -79,10 +79,16 @@ class NapariBlock(AppBlock):
         # Issue #680: extension-based binning (see FijiBlock for rationale).
         if config.get("output_ports"):
             return self._bin_outputs_by_extension(output_files, config)
-        from scistudio.blocks.app.bridge import _guess_mime
+        import mimetypes
+
         from scistudio.core.types.artifact import Artifact
 
-        artifacts = [Artifact(file_path=p, mime_type=_guess_mime(p), description=p.name) for p in output_files]
+        # #2: guess the MIME via the Python stdlib rather than core's private
+        # ``scistudio.blocks.app.bridge._guess_mime`` (removed from core); the
+        # value is non-load-bearing provenance metadata.
+        artifacts = [
+            Artifact(file_path=p, mime_type=mimetypes.guess_type(p.name)[0], description=p.name) for p in output_files
+        ]
         if not artifacts:
             return {}
         return {"image": Collection(artifacts, item_type=Artifact)}

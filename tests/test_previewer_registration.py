@@ -31,6 +31,7 @@ from typing import cast
 
 import numpy as np
 import pytest
+from scistudio.core.types import StorageReference
 from scistudio.previewers.assets import resolve_asset, validate_manifest
 from scistudio.previewers.fallbacks import core_previewer_specs
 from scistudio.previewers.models import (
@@ -113,24 +114,25 @@ def _image_zarr_ref(tmp_path: Path) -> Path:
 def _image_request(spec: PreviewerSpec, path: Path, record_md: dict | None = None) -> PreviewRequest:
     from scistudio.previewers.data_access import PreviewDataAccess
 
-    query: dict = {
-        "_storage": {
-            "backend": "zarr",
-            "path": str(path),
-            "format": "zarr",
-            "metadata": {"axes": ["z", "y", "x"], "shape": [3, 16, 16]},
-        },
-    }
-    if record_md is not None:
-        query["_record_metadata"] = record_md
+    # ADR-052 §8.5: the provider reads the typed ``request.storage`` /
+    # ``request.record_metadata`` (the session manager populates them); the
+    # legacy ``query["_storage"]`` carrier is no longer the provider's input.
+    storage = StorageReference(
+        backend="zarr",
+        path=str(path),
+        format="zarr",
+        metadata={"axes": ["z", "y", "x"], "shape": [3, 16, 16]},
+    )
     target = _data_target("Image", _IMAGE_CHAIN)
     return PreviewRequest(
         target=target,
         spec=spec,
-        query=query,
+        query={},
         data_access=PreviewDataAccess(),
         limits=PreviewLimits(),
         session_id=None,
+        storage=storage,
+        record_metadata=record_md or {},
     )
 
 
@@ -332,17 +334,16 @@ def test_image_provider_reads_tiff_inside_imaging_package(tmp_path: Path) -> Non
     request = PreviewRequest(
         target=_data_target("Image", _IMAGE_CHAIN),
         spec=spec,
-        query={
-            "_storage": {
-                "backend": "filesystem",
-                "path": str(image_path),
-                "format": "tiff",
-                "metadata": {"axes": ["y", "x"], "shape": [8, 8]},
-            }
-        },
+        query={},
         data_access=PreviewDataAccess(),
         limits=PreviewLimits(),
         session_id=None,
+        storage=StorageReference(
+            backend="filesystem",
+            path=str(image_path),
+            format="tiff",
+            metadata={"axes": ["y", "x"], "shape": [8, 8]},
+        ),
     )
 
     envelope = image_provider(request)
@@ -390,10 +391,11 @@ def test_image_provider_error_envelope_has_no_embedded_manifest() -> None:
     request = PreviewRequest(
         target=_data_target("Image", _IMAGE_CHAIN),
         spec=spec,
-        query={"_storage": {"backend": "filesystem", "path": "/does/not/exist.tif", "format": "tif"}},
+        query={},
         data_access=PreviewDataAccess(),
         limits=PreviewLimits(),
         session_id=None,
+        storage=StorageReference(backend="filesystem", path="/does/not/exist.tif", format="tif"),
     )
     envelope = image_provider(request)
     assert envelope.kind is EnvelopeKind.ERROR
@@ -411,15 +413,14 @@ def test_label_provider_returns_composite_envelope_without_self_embedding() -> N
     request = PreviewRequest(
         target=_data_target("Label", _LABEL_CHAIN),
         spec=spec,
-        # No real raster path -> composite_raster_slot returns None; provider
-        # still emits a valid slot-inventory envelope.
-        query={
-            "_storage": {"backend": "filesystem", "path": "/labels", "format": "zarr"},
-            "_record_metadata": record_md,
-        },
+        query={},
         data_access=PreviewDataAccess(),
         limits=PreviewLimits(),
         session_id=None,
+        # No real raster path -> composite_raster_slot returns None; provider
+        # still emits a valid slot-inventory envelope.
+        storage=StorageReference(backend="filesystem", path="/labels", format="zarr"),
+        record_metadata=record_md,
     )
     envelope = label_provider(request)
 

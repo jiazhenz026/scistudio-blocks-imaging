@@ -115,10 +115,16 @@ class FijiBlock(AppBlock):
         # Backwards-compatible single-port fallback: emit every file as an
         # Artifact under the "image" output port so existing graphs keep
         # working until the user opens the port editor.
-        from scistudio.blocks.app.bridge import _guess_mime
+        import mimetypes
+
         from scistudio.core.types.artifact import Artifact
 
-        artifacts = [Artifact(file_path=p, mime_type=_guess_mime(p), description=p.name) for p in output_files]
+        # #2: guess the MIME via the Python stdlib rather than core's private
+        # ``scistudio.blocks.app.bridge._guess_mime`` (removed from core); the
+        # value is non-load-bearing provenance metadata.
+        artifacts = [
+            Artifact(file_path=p, mime_type=mimetypes.guess_type(p.name)[0], description=p.name) for p in output_files
+        ]
         if not artifacts:
             return {}
         return {"image": Collection(artifacts, item_type=Artifact)}

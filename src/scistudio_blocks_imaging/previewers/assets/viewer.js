@@ -32,6 +32,18 @@
 const API_VERSION = "1";
 
 /* ---------------------------------------------------------------------------
+ * Brand tokens (docs/ui-style-guide.md). The app publishes its palette as
+ * `--ss-*` CSS custom properties (space-separated RGB channels) on the page
+ * root; because this module mounts in the same document, our inline styles
+ * inherit them. Each helper pairs the token with a literal channel-triple
+ * fallback via `var(--ss-*, r g b)` so the viewer still renders on older core
+ * that predates the tokens (the tokens are provisional — SciStudio#1849).
+ * ------------------------------------------------------------------------- */
+const ink = (alpha) => (alpha == null ? "rgb(var(--ss-ink, 28 33 27))" : `rgb(var(--ss-ink, 28 33 27) / ${alpha})`);
+const ember = () => "rgb(var(--ss-ember, 240 106 68))";
+const canvas = () => "rgb(var(--ss-canvas, 245 241 232))";
+
+/* ---------------------------------------------------------------------------
  * LUT colormaps — ported verbatim from luts.ts (9 colormaps).
  * Each LUT is a 256-entry [r, g, b] table.
  * ------------------------------------------------------------------------- */
@@ -193,13 +205,20 @@ const previewerModule = {
     };
 
     // ---- root + canvas image ---------------------------------------------
-    const root = el("div", { display: "flex", flexDirection: "column", gap: "0px", fontSize: "10px" });
+    const root = el("div", {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0px",
+      fontSize: "10px",
+      fontFamily: "inherit",
+      color: ink(),
+    });
 
     const stage = el("div", {
       position: "relative",
       overflow: "hidden",
       borderRadius: "0.8rem 0.8rem 0 0",
-      background: "#1e293b",
+      background: ink(),
       height: "300px",
       cursor: "grab",
     });
@@ -222,10 +241,10 @@ const previewerModule = {
         bottom: "6px",
         left: "6px",
         fontSize: "10px",
-        color: "#94a3b8",
-        background: "rgba(0,0,0,0.5)",
+        color: canvas(),
+        background: ink(0.55),
         padding: "2px 8px",
-        borderRadius: "3px",
+        borderRadius: "6px",
         pointerEvents: "none",
       },
       { textContent: "" },
@@ -238,7 +257,7 @@ const previewerModule = {
     const panel = el("div", {
       padding: "8px 10px",
       borderRadius: "0 0 0.8rem 0.8rem",
-      border: "1px solid #e7e5e4",
+      border: `1px solid ${ink(0.1)}`,
       borderTop: "none",
       background: "#fff",
       fontSize: "10px",
@@ -248,10 +267,10 @@ const previewerModule = {
     // Slice slider row (only when a >1 slider axis exists).
     const sliceRow = el("div", { display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" });
     sliceRow.dataset.testid = "image-slice-slider-row";
-    const sliceLabel = el("span", { width: "70px", color: "#78716c" });
-    const sliceInput = el("input", { flex: "1" }, { type: "range", min: "0" });
+    const sliceLabel = el("span", { width: "70px", color: ink(0.6) });
+    const sliceInput = el("input", { flex: "1", accentColor: ember() }, { type: "range", min: "0" });
     sliceInput.dataset.testid = "image-slice-slider";
-    const sliceReadout = el("span", { minWidth: "38px", textAlign: "right", color: "#78716c" });
+    const sliceReadout = el("span", { minWidth: "38px", textAlign: "right", color: ink(0.6) });
     sliceRow.append(sliceLabel, sliceInput, sliceReadout);
     panel.appendChild(sliceRow);
 
@@ -260,14 +279,16 @@ const previewerModule = {
     const btnStyle = {
       fontSize: "12px",
       padding: "1px 8px",
-      border: "1px solid #d6d3d1",
-      borderRadius: "4px",
+      border: `1px solid ${ink(0.15)}`,
+      borderRadius: "8px",
       cursor: "pointer",
       background: "#fff",
+      color: ink(),
+      fontFamily: "inherit",
     };
     const zoomIn = el("button", btnStyle, { type: "button", textContent: "+", title: "Zoom in" });
     zoomIn.setAttribute("aria-label", "Zoom in");
-    const zoomReadout = el("span", { minWidth: "3rem", textAlign: "center", color: "#78716c" });
+    const zoomReadout = el("span", { minWidth: "3rem", textAlign: "center", color: ink(0.6) });
     const zoomOut = el("button", btnStyle, { type: "button", textContent: "−", title: "Zoom out" });
     zoomOut.setAttribute("aria-label", "Zoom out");
     const resetBtn = el(
@@ -275,25 +296,29 @@ const previewerModule = {
       {
         fontSize: "10px",
         padding: "2px 8px",
-        border: "1px solid #d6d3d1",
-        borderRadius: "4px",
+        border: `1px solid ${ink(0.15)}`,
+        borderRadius: "8px",
         cursor: "pointer",
         background: "#fff",
-        color: "#78716c",
+        color: ink(0.7),
+        fontFamily: "inherit",
         marginLeft: "auto",
       },
       { type: "button", textContent: "Reset" },
     );
+    // Export is the panel's primary action — the single ember accent (the rest
+    // of the UI stays neutral ink, per docs/ui-style-guide.md "one accent").
     const exportBtn = el(
       "button",
       {
         fontSize: "10px",
-        padding: "2px 8px",
-        border: "1px solid #d6d3d1",
-        borderRadius: "4px",
+        padding: "2px 10px",
+        border: "0",
+        borderRadius: "8px",
         cursor: "pointer",
-        background: "#fff",
-        color: "#78716c",
+        background: ember(),
+        color: "#fff",
+        fontFamily: "inherit",
         marginLeft: "6px",
       },
       { type: "button", textContent: "Export" },
@@ -304,7 +329,7 @@ const previewerModule = {
 
     // LUT selector row (9 swatches).
     const lutRow = el("div", { display: "flex", alignItems: "center", gap: "4px", marginBottom: "4px" });
-    lutRow.append(el("span", { width: "30px", color: "#78716c" }, { textContent: "LUT" }));
+    lutRow.append(el("span", { width: "30px", color: ink(0.6) }, { textContent: "LUT" }));
     const lutBox = el("div", { display: "flex", gap: "2px", flex: "1", flexWrap: "wrap" });
     const lutButtons = {};
     Object.keys(LUTS).forEach((name) => {
@@ -314,7 +339,7 @@ const previewerModule = {
         borderRadius: "2px",
         cursor: "pointer",
         padding: "0",
-        border: name === state.lutName ? "2px solid #3b82f6" : "1px solid #475569",
+        border: name === state.lutName ? `2px solid ${ember()}` : `1px solid ${ink(0.2)}`,
         background: `linear-gradient(to right, ${lutGradient(LUTS[name])})`,
       });
       sw.type = "button";
@@ -334,10 +359,10 @@ const previewerModule = {
     // Min / Max display range rows.
     function rangeRow(labelText, ariaLabel, min, max) {
       const row = el("div", { display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" });
-      row.append(el("span", { width: "30px", color: "#78716c" }, { textContent: labelText }));
-      const input = el("input", { flex: "1" }, { type: "range", min: String(min), max: String(max) });
+      row.append(el("span", { width: "30px", color: ink(0.6) }, { textContent: labelText }));
+      const input = el("input", { flex: "1", accentColor: ember() }, { type: "range", min: String(min), max: String(max) });
       input.setAttribute("aria-label", ariaLabel);
-      const readout = el("span", { width: "24px", textAlign: "right", color: "#78716c" });
+      const readout = el("span", { width: "24px", textAlign: "right", color: ink(0.6) });
       row.append(input, readout);
       return { row, input, readout };
     }
@@ -351,8 +376,8 @@ const previewerModule = {
     const metaPanel = el("div", {
       marginTop: "6px",
       paddingTop: "6px",
-      borderTop: "1px solid #f1f5f9",
-      color: "#64748b",
+      borderTop: `1px solid ${ink(0.1)}`,
+      color: ink(0.6),
       lineHeight: "1.5",
     });
     metaPanel.dataset.testid = "image-metadata-panel";
@@ -361,7 +386,7 @@ const previewerModule = {
     // ---- rendering --------------------------------------------------------
     function syncLutButtons() {
       Object.keys(lutButtons).forEach((name) => {
-        lutButtons[name].style.border = name === state.lutName ? "2px solid #3b82f6" : "1px solid #475569";
+        lutButtons[name].style.border = name === state.lutName ? `2px solid ${ember()}` : `1px solid ${ink(0.2)}`;
       });
     }
 

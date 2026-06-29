@@ -182,3 +182,75 @@ class TestTransform:
 class TestPluginEntryPoint:
     def test_get_types_returns_four_classes(self) -> None:
         assert get_types() == [Image, Mask, Label, Transform]
+
+
+class TestFromArrays:
+    """ADR-052 §13.1 MUST-shape ``from_arrays`` domain constructors."""
+
+    def test_image_from_arrays_2d_defaults_to_yx(self) -> None:
+        image = Image.from_arrays(np.zeros((4, 5), dtype="uint8"))
+        assert image.axes == ["y", "x"]
+        assert image.shape == (4, 5)
+        assert image.to_numpy().shape == (4, 5)
+        assert image.to_numpy().dtype == np.dtype("uint8")
+
+    def test_image_from_arrays_explicit_axes(self) -> None:
+        image = Image.from_arrays(np.zeros((2, 4, 5), dtype="uint16"), axes=["z", "y", "x"])
+        assert image.axes == ["z", "y", "x"]
+        assert image.shape == (2, 4, 5)
+
+    def test_image_from_arrays_highdim_without_axes_raises(self) -> None:
+        with pytest.raises(ValueError, match="explicit axes"):
+            Image.from_arrays(np.zeros((2, 4, 5)))
+
+    def test_image_from_arrays_carries_meta(self) -> None:
+        meta = Image.Meta(objective="20x")
+        image = Image.from_arrays(np.zeros((4, 4)), meta=meta)
+        assert image.meta is not None
+        assert image.meta.objective == "20x"
+
+    def test_mask_from_arrays_coerces_bool(self) -> None:
+        mask = Mask.from_arrays(np.array([[0, 2], [3, 0]]))
+        assert np.dtype(mask.dtype) == np.dtype(bool)
+        assert mask.to_numpy().dtype == np.dtype(bool)
+        assert mask.to_numpy().tolist() == [[False, True], [True, False]]
+
+    def test_transform_from_arrays_packs_matrix_and_meta(self) -> None:
+        transform = Transform.from_arrays(np.eye(3, dtype=np.float32)[:2], transform_type="affine")
+        assert transform.axes == ["row", "col"]
+        assert transform.shape == (2, 3)
+        assert transform.meta is not None
+        assert transform.meta.transform_type == "affine"
+
+    def test_transform_from_arrays_invalid_shape_raises(self) -> None:
+        with pytest.raises(ValueError, match="Transform shape"):
+            Transform.from_arrays(np.zeros((4, 4)), transform_type="affine")
+
+    def test_label_from_arrays_raster_only(self) -> None:
+        label = Label.from_arrays(raster=np.zeros((4, 4), dtype="int32"))
+        assert set(label.slots) == {"raster"}
+        assert label.get("raster").to_numpy().shape == (4, 4)
+
+    def test_label_from_arrays_polygons_pyarrow(self) -> None:
+        import pyarrow as pa
+
+        table = pa.table({"x": [1.0, 2.0], "y": [3.0, 4.0]})
+        label = Label.from_arrays(polygons=table)
+        assert set(label.slots) == {"polygons"}
+        assert label.get("polygons").row_count == 2
+
+    def test_label_from_arrays_neither_raises(self) -> None:
+        with pytest.raises(ValueError, match="at least one"):
+            Label.from_arrays()
+
+
+class TestStabilityMarkers:
+    """Every exported type carries an ADR-052 §5 ``@stable`` marker (§13.1)."""
+
+    def test_each_type_is_stable(self) -> None:
+        from scistudio.stability import get_stability
+
+        for type_ in (Image, Mask, Label, Transform):
+            info = get_stability(type_)
+            assert info is not None, f"{type_.__name__} has no stability marker"
+            assert info.tier == "stable"
