@@ -67,7 +67,10 @@ def test_pyproject_lists_runtime_dependencies() -> None:
 
     dependencies = set(data["project"]["dependencies"])
     assert {
-        "scistudio>=0.2.1a0",
+        # ADR-052 §13.1 contract floor (#9): types/previewers now rely on the
+        # core 0.3.1 baseline (stability decorators, public core.types root,
+        # typed previewer author surface).
+        "scistudio>=0.3.1a0",
         "numpy>=1.24",
         "scipy>=1.11",
         "scikit-image>=0.22",

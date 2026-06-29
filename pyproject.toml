@@ -13,7 +13,13 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "scistudio>=0.2.1a0",
+    # ADR-052 §13.1 developer contract: the package's public surface now relies
+    # on the core stability decorators (``scistudio.stability``), the public
+    # ``scistudio.core.types`` re-export root, and the sanctioned typed previewer
+    # author surface (``PreviewRequest.storage`` / ``record_metadata``). These
+    # landed on the core 0.3.1 baseline, so the floor moves 0.2.1a0 -> 0.3.1a0
+    # to match ``scistudio-blocks-spectroscopy`` and the package template.
+    "scistudio>=0.3.1a0",
     "numpy>=1.24",
     "scipy>=1.11",
     "scikit-image>=0.22",
@@ -72,7 +78,10 @@ imaging = "scistudio_blocks_imaging.previewers:get_previewers"
 [tool.scistudio.ota]
 manifest_url = "https://github.com/jiazhenz026/scistudio-blocks-imaging/releases/download/ota-alpha/manifest.json"
 channel = "alpha"
-min_core_base = "0.2.1"
+# Matches the ``scistudio>=0.3.1a0`` dependency floor: the ADR-052 §13.1
+# contract this release adopts requires the core 0.3.1 baseline, so OTA
+# recipients on an older base must reinstall rather than hot-patch.
+min_core_base = "0.3.1"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/scistudio_blocks_imaging"]

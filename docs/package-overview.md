@@ -24,7 +24,14 @@ visualization, and interactive external-app blocks. 49 concrete block classes.
 | `Image` | `Array` | General 2-D–6-D microscopy image | axes from `{t, z, c, lambda, y, x}`; OME metadata via `Image.Meta.ome` |
 | `Mask` | `Image` | Binary mask | enforces `dtype=bool` |
 | `Label` | `CompositeData` | Label image (`raster` + optional `polygons` slots) | OME carried via `Label.Meta.ome` |
-| `Transform` | (internal) | Registration transform | helper type, not a public DataObject |
+| `Transform` | `Array` | Registration transform (affine matrix) | `shape` is `(2, 3)` or `(3, 3)` |
+
+All four are public, `@stable` (ADR-052 §5) reuse-surface types exported at the
+package top level and via `get_types()`. Each ships the ADR-052 §13.1 MUST-shape
+`from_arrays(...)` domain constructor (`Image.from_arrays(pixels, axes=…)`,
+`Mask.from_arrays(mask)`, `Label.from_arrays(raster=…, polygons=…)`,
+`Transform.from_arrays(matrix, transform_type=…)`); the ergonomic accessors
+(`to_numpy` / `to_memory` / `with_meta`) stay core's and are not shadowed.
 
 ## Blocks (49)
 
@@ -62,7 +69,11 @@ and PNG/JPEG (EXIF-mapped) handlers extend coverage.
 | `imaging.image.viewer` | `Image` | array | slice, lut, range, zoom, metadata, export |
 | `imaging.label.viewer` | `Label` | composite | slots, raster, metadata, export |
 
-Both ship a self-contained vanilla-ESM `previewers/assets/viewer.js`.
+Both ship a self-contained vanilla-ESM `previewers/assets/viewer.js`, styled to
+the SciStudio brand `--ss-*` tokens (`docs/ui-style-guide.md`). The backend
+providers live in `previewers/providers.py` and read only the sanctioned typed
+author surface (`request.storage` / `request.record_metadata`); TIFF/PNG
+decoding is package-owned (core `data_access` reads Zarr only, by ADR-048 §4).
 
 ## Optional extras
 
@@ -71,5 +82,5 @@ Both ship a self-contained vanilla-ESM `previewers/assets/viewer.js`.
 
 ## Compatibility
 
-- Requires `scistudio>=0.2.1a0`.
+- Requires `scistudio>=0.3.1a0` (ADR-052 §13.1 contract baseline).
 - Python `>=3.11`.
