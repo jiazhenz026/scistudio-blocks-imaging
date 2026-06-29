@@ -47,6 +47,11 @@ All notable changes to this package are documented here. The format follows
 
 ### Fixed
 
+- `FijiBlock` / `NapariBlock` no longer import the now-removed core private
+  `scistudio.blocks.app.bridge._guess_mime` (the app-bridge drift in #2); they
+  guess the artifact MIME via the Python stdlib `mimetypes` instead. Unblocks CI
+  for this contract round; the rest of the interactive/blocks conformance is a
+  follow-up.
 - Migrated off the deprecated `Array._data` attribute to the core data API
   (`to_memory()`/`data=`); see the migration PR.
 
