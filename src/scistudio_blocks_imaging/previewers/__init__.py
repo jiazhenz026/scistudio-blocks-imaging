@@ -49,9 +49,14 @@ LABEL_PREVIEWER_ID = "imaging.label.viewer"
 #: Owning package name (matches the distribution / monorepo dir).
 OWNER_NAME = "scistudio-blocks-imaging"
 
-#: Bundle version. Bumped when ``assets/viewer.js`` changes so the host can
-#: cache-bust. Tracks the package version it ships with.
-VIEWER_BUNDLE_VERSION = "0.1.0"
+#: Frontend asset-bundle fingerprint surfaced as ``FrontendManifest.version``.
+#: Bump this on every change to ``assets/viewer.js`` so the manifest reports a
+#: fresh fingerprint and clients don't keep serving a stale cached viewer after
+#: an upgrade / OTA refresh. Starts from the package version and is bumped
+#: independently per asset change (it can therefore lead the package version).
+#: 0.1.0 -> 0.1.1: viewer.js restyled to the brand ``--ss-*`` tokens (#11, after
+#: the #9 / PR #10 previewer refactor).
+VIEWER_BUNDLE_VERSION = "0.1.1"
 
 #: Backend-relative, same-origin module URL the host imports the ESM viewer
 #: from. The API runtime serves it via ``/api/previews/assets/<id>/<file>``
