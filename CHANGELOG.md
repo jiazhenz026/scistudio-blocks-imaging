@@ -6,6 +6,8 @@ All notable changes to this package are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-29
+
 ### Fixed
 
 - Bump `VIEWER_BUNDLE_VERSION` `0.1.0` → `0.1.1` so the previewer manifest

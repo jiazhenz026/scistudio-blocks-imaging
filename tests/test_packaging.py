@@ -37,7 +37,7 @@ def test_get_package_info_matches_release_metadata() -> None:
         name="scistudio-blocks-imaging",
         description="Microscopy imaging blocks for SciStudio Phase 11 workflows.",
         author="SciStudio Contributors",
-        version="0.1.0",
+        version="0.1.1",
         ota=PackageOtaSource(manifest_url=OTA_MANIFEST_URL, channel=OTA_CHANNEL),
     )
 
@@ -55,7 +55,7 @@ def test_pyproject_declares_release_entry_points() -> None:
 
     project = data["project"]
     assert project["name"] == "scistudio-blocks-imaging"
-    assert project["version"] == "0.1.0"
+    assert project["version"] == "0.1.1"
     assert project["optional-dependencies"]["cellpose"] == ["cellpose>=3.0"]
     assert project["entry-points"]["scistudio.blocks"]["imaging"] == "scistudio_blocks_imaging:get_block_package"
     assert project["entry-points"]["scistudio.types"]["imaging"] == "scistudio_blocks_imaging:get_types"
@@ -83,4 +83,4 @@ def test_pyproject_lists_runtime_dependencies() -> None:
 
 
 def test_version_constant_matches_pyproject() -> None:
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.1.1"
