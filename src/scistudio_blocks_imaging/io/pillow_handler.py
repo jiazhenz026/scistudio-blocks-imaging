@@ -268,6 +268,14 @@ def _save_png(image: Image, path: Path, **_: Any) -> None:
     from PIL import Image as _PILImageMod
 
     arr = _to_pil_array(image)
+    if np.issubdtype(arr.dtype, np.floating):
+        raise ValueError(
+            "SaveImage(PNG): cannot write a floating-point image "
+            f"(dtype={arr.dtype}). PNG only stores uint8 or uint16 pixels. "
+            "Convert the image first with the Convert DType block "
+            "(rescale='minmax' stretches by the data's actual range), or save "
+            "to a float-capable format such as TIFF, OME-TIFF, or NPY."
+        )
     pil_img = _PILImageMod.fromarray(arr)
     dpi = _ome_dpi_value(image)
     save_kwargs: dict[str, Any] = {}

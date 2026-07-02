@@ -6,6 +6,21 @@ All notable changes to this package are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `SaveImage` to PNG no longer crashes with Pillow's cryptic
+  `OSError: cannot write mode F as PNG` on floating-point images. `_save_png`
+  now raises a clear, actionable error naming the `ConvertDType` block and
+  float-capable formats (TIFF/OME-TIFF/NPY) (#15).
+
+### Added
+
+- `ConvertDType` gains a `minmax` rescale mode that stretches an image by its
+  actual min/max into the target dtype's full range — the correct way to
+  prepare a float image (arbitrary value range) for uint8/uint16 output such as
+  PNG, where the existing `linear` mode assumes float data is already in
+  `[0, 1]` (#15).
+
 ## [0.1.1] - 2026-06-29
 
 ### Fixed

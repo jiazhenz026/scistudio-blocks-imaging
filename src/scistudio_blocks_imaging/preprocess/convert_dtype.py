@@ -46,8 +46,15 @@ class ConvertDType(ProcessBlock):
             },
             "rescale": {
                 "type": "string",
-                "enum": ["linear", "clip"],
+                "enum": ["linear", "clip", "minmax"],
                 "default": "linear",
+                "description": (
+                    "linear: map by dtype range (float treated as [0,1]); "
+                    "clip: cast and clip to the output range; "
+                    "minmax: stretch by the data's actual min/max into the "
+                    "full output range (use for float images with an "
+                    "arbitrary value range before saving to uint8/uint16)."
+                ),
             },
         },
         "required": ["target_dtype"],
@@ -59,7 +66,7 @@ class ConvertDType(ProcessBlock):
         rescale = str(config.get("rescale", "linear"))
         if target_name not in _TARGET_DTYPES:
             raise ValueError(f"ConvertDType: unsupported target_dtype {target_name!r}")
-        if rescale not in {"linear", "clip"}:
+        if rescale not in {"linear", "clip", "minmax"}:
             raise ValueError(f"ConvertDType: unsupported rescale mode {rescale!r}")
 
         data = _image_data(item)
@@ -92,6 +99,8 @@ def _convert_array(arr: np.ndarray, target: np.dtype[Any], *, rescale: str) -> n
         return np.asarray(arr > 0, dtype=target)
     if rescale == "linear":
         return _convert_linear(arr, target)
+    if rescale == "minmax":
+        return _convert_minmax(arr, target)
     return _convert_clip(arr, target)
 
 
@@ -133,6 +142,40 @@ def _convert_clip(arr: np.ndarray, target: np.dtype[Any]) -> np.ndarray:
         out_min, out_max = info_out
         return np.asarray(np.clip(arr_np, out_min, out_max), dtype=target)
     return np.asarray(arr_np, dtype=target)
+
+
+def _convert_minmax(arr: np.ndarray, target: np.dtype[Any]) -> np.ndarray:
+    """Stretch *arr* by its actual min/max into *target*'s full range.
+
+    Unlike ``linear`` (which treats float input as already normalised to
+    ``[0, 1]``), this maps the data's observed minimum to the output
+    minimum and its observed maximum to the output maximum. This is the
+    correct preparation for saving a float image with an arbitrary value
+    range (e.g. ``0..4000``) to a uint8/uint16 format such as PNG.
+
+    A constant image (``max == min``) maps to the output minimum
+    (zeros for unsigned integer / float targets).
+    """
+    arr_np = np.asarray(arr)
+    arr_float = arr_np.astype(np.float64, copy=False)
+    info_out = _dtype_info(target)
+
+    if arr_float.size == 0:
+        return np.asarray(arr_float, dtype=target)
+
+    a_min = float(arr_float.min())
+    a_max = float(arr_float.max())
+    if a_max == a_min:
+        if info_out is not None:
+            return np.full(arr_float.shape, info_out[0], dtype=target)
+        return np.zeros_like(arr_float, dtype=target)
+
+    normalized = (arr_float - a_min) / (a_max - a_min)
+    if info_out is not None:
+        out_min, out_max = info_out
+        scaled = normalized * (out_max - out_min) + out_min
+        return np.asarray(np.clip(scaled, out_min, out_max), dtype=target)
+    return np.asarray(normalized, dtype=target)
 
 
 def _dtype_info(dtype: np.dtype[Any]) -> tuple[float, float] | None:
