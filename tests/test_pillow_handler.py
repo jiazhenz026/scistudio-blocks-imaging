@@ -22,7 +22,40 @@ import pytest
 pytest.importorskip("PIL.Image")
 from PIL import Image as PILImage
 
-from scistudio_blocks_imaging.io.pillow_handler import _load_jpeg, _load_png
+from scistudio_blocks_imaging.io.pillow_handler import _load_jpeg, _load_png, _save_png
+from scistudio_blocks_imaging.types import Image
+
+
+def _make_image(arr: np.ndarray, axes: list[str]) -> Image:
+    img = Image(axes=axes, shape=arr.shape, dtype=arr.dtype)
+    img._data = arr  # type: ignore[attr-defined]
+    return img
+
+
+def test_save_png_float_image_raises_clear_error(tmp_path: Path) -> None:
+    """A float image must raise an actionable error, not Pillow's cryptic
+    ``OSError: cannot write mode F as PNG`` (issue #15)."""
+    img = _make_image(np.array([[0.0, 4000.0]], dtype=np.float32), ["y", "x"])
+    with pytest.raises(ValueError, match=r"floating-point|Convert DType"):
+        _save_png(img, tmp_path / "out.png")
+
+
+def test_save_png_uint8_image_writes_file(tmp_path: Path) -> None:
+    """uint8 images still save cleanly after the float guard is added."""
+    img = _make_image(np.arange(12, dtype=np.uint8).reshape(3, 4), ["y", "x"])
+    out = tmp_path / "out.png"
+    _save_png(img, out)
+    assert out.exists()
+    with PILImage.open(str(out)) as reopened:
+        assert reopened.size == (4, 3)
+
+
+def test_save_png_uint16_image_writes_file(tmp_path: Path) -> None:
+    """uint16 grayscale is PNG-native (I;16) and must still save."""
+    img = _make_image(np.array([[0, 65535]], dtype=np.uint16), ["y", "x"])
+    out = tmp_path / "out16.png"
+    _save_png(img, out)
+    assert out.exists()
 
 
 def _write_grayscale_png(path: Path, height: int = 4, width: int = 6) -> np.ndarray:

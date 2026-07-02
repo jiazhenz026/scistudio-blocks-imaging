@@ -62,6 +62,11 @@ typed `Image.Meta` domain fields (pixel size, etc.) are not guaranteed to
 persist across all formats. Optional Bio-Formats (`[bioformats]`, needs a JVM)
 and PNG/JPEG (EXIF-mapped) handlers extend coverage.
 
+PNG stores only `uint8`/`uint16` pixels, so `SaveImage` to PNG raises a clear
+error for floating-point images. Convert first with the `ConvertDType` block —
+its `minmax` rescale mode stretches the data's actual value range into the
+target integer range — or save to a float-capable format (TIFF/OME-TIFF/NPY).
+
 ## Previewers (ADR-048)
 
 | Previewer | Targets | Kind | Capabilities |

@@ -51,6 +51,39 @@ def test_convert_float32_to_uint8_clip() -> None:
     assert np.array_equal(out_arr, np.array([[0, 12, 255]], dtype=np.uint8))
 
 
+def test_convert_float_to_uint8_minmax_stretches_actual_range() -> None:
+    # A float image whose real range is 0..4000 must span the full uint8
+    # range under minmax (not clip to white as ``linear`` would).
+    img = _make_image(np.array([[0.0, 1000.0, 4000.0]], dtype=np.float32), ["y", "x"])
+    out = ConvertDType().process_item(img, BlockConfig(params={"target_dtype": "uint8", "rescale": "minmax"}))
+    out_arr = np.asarray(out.to_memory())
+    assert out_arr.dtype == np.uint8
+    assert out_arr[0, 0] == 0
+    assert out_arr[0, -1] == 255
+    assert 0 < int(out_arr[0, 1]) < 255
+
+
+def test_convert_float_to_uint16_minmax_spans_full_range() -> None:
+    img = _make_image(np.array([[-3.5, 10.0]], dtype=np.float32), ["y", "x"])
+    out = ConvertDType().process_item(img, BlockConfig(params={"target_dtype": "uint16", "rescale": "minmax"}))
+    out_arr = np.asarray(out.to_memory())
+    assert np.array_equal(out_arr, np.array([[0, 65535]], dtype=np.uint16))
+
+
+def test_convert_minmax_constant_image_maps_to_zero() -> None:
+    img = _make_image(np.full((2, 2), 7.0, dtype=np.float32), ["y", "x"])
+    out = ConvertDType().process_item(img, BlockConfig(params={"target_dtype": "uint8", "rescale": "minmax"}))
+    out_arr = np.asarray(out.to_memory())
+    assert np.array_equal(out_arr, np.zeros((2, 2), dtype=np.uint8))
+
+
+def test_convert_minmax_float_target_normalizes_to_unit_interval() -> None:
+    img = _make_image(np.array([[2.0, 4.0, 6.0]], dtype=np.float32), ["y", "x"])
+    out = ConvertDType().process_item(img, BlockConfig(params={"target_dtype": "float32", "rescale": "minmax"}))
+    out_arr = np.asarray(out.to_memory())
+    assert np.allclose(out_arr, np.array([[0.0, 0.5, 1.0]], dtype=np.float32))
+
+
 def test_convert_to_bool_thresholds_at_zero() -> None:
     img = _make_image(np.array([[-1.0, 0.0, 2.0]], dtype=np.float32), ["y", "x"])
     out = ConvertDType().process_item(img, BlockConfig(params={"target_dtype": "bool"}))
