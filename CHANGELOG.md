@@ -6,6 +6,8 @@ All notable changes to this package are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-07-02
+
 ### Fixed
 
 - `SaveImage` to PNG no longer crashes with Pillow's cryptic

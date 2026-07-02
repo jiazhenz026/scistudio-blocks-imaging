@@ -51,7 +51,7 @@ from scistudio_blocks_imaging.visualization.render import (
     RenderPseudoColor,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 # OTA hot-update source (#1784). Keep in sync with [tool.scistudio.ota]
 # in pyproject.toml; validate_contract.py enforces they match.

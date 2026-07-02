@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scistudio-blocks-imaging"
-version = "0.1.1"
+version = "0.1.2"
 description = "Phase 11 microscopy imaging blocks for SciStudio."
 readme = "README.md"
 license = { text = "MIT" }
